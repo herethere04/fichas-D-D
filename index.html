@@ -1,231 +1,212 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grimório D&D - Ziggy Edition</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <title>D&D 5e Character Sheet</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
 
-    <div id="start-screen" class="overlay active">
-        <div class="modal-box">
-            <h1><i class="fa-solid fa-dragon"></i> Grimório do Jogador</h1>
-            <div class="drop-zone" id="drop-zone">
-                <i class="fa-solid fa-file-import fa-3x"></i>
-                <p>Arraste seu <strong>.json</strong> aqui</p>
-                <button class="btn-primary" onclick="newSheet()">Ou crie uma nova ficha</button>
-                <input type="file" id="file-input" accept=".json" onchange="loadFromFile(this)" hidden>
-                <button class="btn-text" onclick="document.getElementById('file-input').click()">Buscar arquivo</button>
-            </div>
-        </div>
+    <div class="controls">
+        <button onclick="saveSheet()" class="btn-save"><i class="fa-solid fa-floppy-disk"></i> SAVE JSON</button>
+        <button onclick="document.getElementById('file-input').click()" class="btn-load"><i class="fa-solid fa-upload"></i> LOAD</button>
+        <input type="file" id="file-input" accept=".json" onchange="loadFromFile(this)" hidden>
     </div>
 
-    <div id="app" class="app-container hidden">
+    <div id="sheet" class="sheet-container">
         
-        <header class="top-bar">
-            <div class="char-identity">
-                <input type="text" id="charName" placeholder="Nome do Personagem" class="input-title">
-                <div class="sub-info">
-                    <input type="text" id="classLevel" placeholder="Classe e Nível">
-                    <input type="text" id="background" placeholder="Antecedente">
-                    <input type="text" id="race" placeholder="Raça">
-                    <input type="text" id="alignment" placeholder="Tendência">
-                    <input type="text" id="player" placeholder="Jogador">
-                    <input type="number" id="xp" placeholder="XP">
-                </div>
-            </div>
-            <div class="app-controls">
-                <button onclick="saveSheet()" class="btn-save"><i class="fa-solid fa-floppy-disk"></i> Salvar</button>
-                <button onclick="closeSheet()" class="btn-danger"><i class="fa-solid fa-right-from-bracket"></i> Sair</button>
-            </div>
-        </header>
-
-        <main class="grid-layout">
+        <section class="sheet-page" id="page-1">
             
-            <aside class="sidebar-left">
-                <div class="panel attributes-panel">
-                    <div class="attr-row" data-stat="str">
-                        <label>FORÇA</label>
-                        <input type="number" id="str" value="10" oninput="updateModifiers()">
-                        <div class="mod-box" id="str-mod">+0</div>
+            <header class="header-section">
+                <div class="header-name">
+                    <input type="text" id="charName" placeholder="Character Name">
+                    <label>Character Name</label>
+                </div>
+                <div class="header-meta">
+                    <div class="meta-row">
+                        <div class="meta-box"><input type="text" id="classLevel"><label>Class & Level</label></div>
+                        <div class="meta-box"><input type="text" id="background"><label>Background</label></div>
+                        <div class="meta-box"><input type="text" id="playerName"><label>Player Name</label></div>
                     </div>
-                    <div class="attr-row" data-stat="dex">
-                        <label>DESTREZA</label>
-                        <input type="number" id="dex" value="10" oninput="updateModifiers()">
-                        <div class="mod-box" id="dex-mod">+0</div>
-                    </div>
-                    <div class="attr-row" data-stat="con">
-                        <label>CONSTITUIÇÃO</label>
-                        <input type="number" id="con" value="10" oninput="updateModifiers()">
-                        <div class="mod-box" id="con-mod">+0</div>
-                    </div>
-                    <div class="attr-row" data-stat="int">
-                        <label>INTELIGÊNCIA</label>
-                        <input type="number" id="int" value="10" oninput="updateModifiers()">
-                        <div class="mod-box" id="int-mod">+0</div>
-                    </div>
-                    <div class="attr-row" data-stat="wis">
-                        <label>SABEDORIA</label>
-                        <input type="number" id="wis" value="10" oninput="updateModifiers()">
-                        <div class="mod-box" id="wis-mod">+0</div>
-                    </div>
-                    <div class="attr-row" data-stat="cha">
-                        <label>CARISMA</label>
-                        <input type="number" id="cha" value="10" oninput="updateModifiers()">
-                        <div class="mod-box" id="cha-mod">+0</div>
+                    <div class="meta-row">
+                        <div class="meta-box"><input type="text" id="race"><label>Race</label></div>
+                        <div class="meta-box"><input type="text" id="alignment"><label>Alignment</label></div>
+                        <div class="meta-box"><input type="number" id="xp"><label>Experience Points</label></div>
                     </div>
                 </div>
+            </header>
 
-                <div class="panel misc-stats">
-                    <div class="stat-mini">
-                        <label>Inspiração</label>
-                        <input type="checkbox" id="inspiration" class="checkbox-gem">
+            <main class="main-grid">
+                <div class="col-left">
+                    <div class="attributes-stack">
+                        <div class="attr-box"><label>Strength</label><input type="number" id="str_mod" class="mod-big"><input type="number" id="str_score" class="score-small"></div>
+                        <div class="attr-box"><label>Dexterity</label><input type="number" id="dex_mod" class="mod-big"><input type="number" id="dex_score" class="score-small"></div>
+                        <div class="attr-box"><label>Constitution</label><input type="number" id="con_mod" class="mod-big"><input type="number" id="con_score" class="score-small"></div>
+                        <div class="attr-box"><label>Intelligence</label><input type="number" id="int_mod" class="mod-big"><input type="number" id="int_score" class="score-small"></div>
+                        <div class="attr-box"><label>Wisdom</label><input type="number" id="wis_mod" class="mod-big"><input type="number" id="wis_score" class="score-small"></div>
+                        <div class="attr-box"><label>Charisma</label><input type="number" id="cha_mod" class="mod-big"><input type="number" id="cha_score" class="score-small"></div>
                     </div>
-                    <div class="stat-mini">
-                        <label>Proficiência</label>
-                        <input type="number" id="profBonus" value="2" oninput="updateModifiers()">
-                    </div>
-                    <div class="stat-mini">
-                        <label>Perc. Passiva</label>
-                        <span id="passiveWis" class="passive-val">10</span>
-                    </div>
-                </div>
 
-                <div class="panel list-panel">
-                    <h3>Salvaguardas</h3>
-                    <div id="saving-throws-list" class="skill-list">
+                    <div class="skills-block">
+                        <div class="insp-prof">
+                            <div class="mini-box"><input type="number" id="inspiration"><label>Inspiration</label></div>
+                            <div class="mini-box"><input type="number" id="profBonus"><label>Proficiency Bonus</label></div>
                         </div>
-                </div>
-
-                <div class="panel list-panel">
-                    <h3>Perícias</h3>
-                    <div id="skills-list" class="skill-list">
-                        </div>
-                </div>
-            </aside>
-
-            <section class="center-stage">
-                
-                <div class="combat-header">
-                    <div class="combat-stat shield">
-                        <label>CA</label>
-                        <input type="number" id="ac" value="10">
-                    </div>
-                    <div class="combat-stat">
-                        <label>Iniciativa</label>
-                        <input type="number" id="initiative" value="0">
-                    </div>
-                    <div class="combat-stat">
-                        <label>Desloc.</label>
-                        <input type="text" id="speed" value="9m">
-                    </div>
-                </div>
-
-                <div class="hp-container panel">
-                    <div class="hp-top">
-                        <div class="hp-field">
-                            <label>HP Máximo</label>
-                            <input type="number" id="hpMax" value="10">
-                        </div>
-                        <div class="hp-field">
-                            <label>HP Temporário</label>
-                            <input type="number" id="hpTemp" value="0">
+                        <div class="list-container">
+                            <div class="list-box"><div id="saves-list"></div><label class="box-label">Saving Throws</label></div>
+                            <div class="list-box"><div id="skills-list"></div><label class="box-label">Skills</label></div>
                         </div>
                     </div>
-                    <div class="hp-main">
-                        <label>HP ATUAL</label>
-                        <input type="number" id="hpCurrent" value="10">
+
+                    <div class="passive-perc">
+                        <input type="number" id="passiveWis">
+                        <label>Passive Wisdom (Perception)</label>
                     </div>
-                    <div class="hp-footer">
-                        <div class="hit-dice">
-                            <label>Dados de Vida</label>
-                            <div class="hd-inputs">
-                                <input type="text" id="hitDiceTotal" placeholder="Total">
-                                <input type="text" id="hitDiceCurrent" placeholder="Atual">
-                            </div>
+
+                    <div class="prof-lang-box">
+                        <textarea id="proficienciesLanguages"></textarea>
+                        <label class="box-label">Other Proficiencies & Languages</label>
+                    </div>
+                </div>
+
+                <div class="col-center">
+                    <div class="combat-header">
+                        <div class="shield-box"><input type="number" id="ac"><label>Armor Class</label></div>
+                        <div class="shield-box"><input type="number" id="initiative"><label>Initiative</label></div>
+                        <div class="shield-box"><input type="text" id="speed"><label>Speed</label></div>
+                    </div>
+
+                    <div class="hp-block">
+                        <div class="hp-top"><label>Hit Point Maximum</label><input type="number" id="hpMax" class="line-input"></div>
+                        <textarea id="hpCurrent" class="big-hp-input"></textarea>
+                        <label class="center-label">Current Hit Points</label>
+                    </div>
+
+                    <div class="hp-temp-block">
+                        <textarea id="hpTemp" class="temp-hp-input"></textarea>
+                        <label class="center-label">Temporary Hit Points</label>
+                    </div>
+
+                    <div class="dice-death-row">
+                        <div class="hit-dice-box">
+                            <div class="hd-top"><label>Total</label><input type="text" id="hdTotal" class="tiny-input"></div>
+                            <input type="text" id="hdCurrent" class="big-dice-input">
+                            <label class="box-footer">Hit Dice</label>
                         </div>
-                        <div class="death-saves">
-                            <label>Testes de Morte</label>
-                            <div class="ds-row">
-                                <span>Sucesso</span>
-                                <input type="checkbox" id="ds_s1"><input type="checkbox" id="ds_s2"><input type="checkbox" id="ds_s3">
-                            </div>
-                            <div class="ds-row">
-                                <span>Falha</span>
-                                <input type="checkbox" id="ds_f1"><input type="checkbox" id="ds_f2"><input type="checkbox" id="ds_f3">
-                            </div>
+                        <div class="death-saves-box">
+                            <div class="ds-line"><label>Successes</label><input type="checkbox" id="ds_s1"><input type="checkbox" id="ds_s2"><input type="checkbox" id="ds_s3"></div>
+                            <div class="ds-line"><label>Failures</label><input type="checkbox" id="ds_f1"><input type="checkbox" id="ds_f2"><input type="checkbox" id="ds_f3"></div>
+                            <label class="box-footer">Death Saves</label>
+                        </div>
+                    </div>
+
+                    <div class="attacks-section">
+                        <div class="attacks-table-header">
+                            <span style="flex:2">NAME</span>
+                            <span style="flex:1">ATK BONUS</span>
+                            <span style="flex:2">DAMAGE/TYPE</span>
+                        </div>
+                        <div class="attack-row">
+                            <input type="text" id="atk_name_1" class="atk-input" placeholder="Weapon">
+                            <input type="text" id="atk_bonus_1" class="atk-input-center" placeholder="+0">
+                            <input type="text" id="atk_dmg_1" class="atk-input" placeholder="Dmg/Type">
+                        </div>
+                        <div class="attack-row">
+                            <input type="text" id="atk_name_2" class="atk-input">
+                            <input type="text" id="atk_bonus_2" class="atk-input-center">
+                            <input type="text" id="atk_dmg_2" class="atk-input">
+                        </div>
+                        <div class="attack-row">
+                            <input type="text" id="atk_name_3" class="atk-input">
+                            <input type="text" id="atk_bonus_3" class="atk-input-center">
+                            <input type="text" id="atk_dmg_3" class="atk-input">
+                        </div>
+                        <textarea id="attacks_text"></textarea>
+                        <label class="box-label">Attacks & Spellcasting</label>
+                    </div>
+
+                    <div class="equipment-box">
+                        <div class="currency-col">
+                            <div class="coin"><span>CP</span><input type="number" id="cp"></div>
+                            <div class="coin"><span>SP</span><input type="number" id="sp"></div>
+                            <div class="coin"><span>EP</span><input type="number" id="ep"></div>
+                            <div class="coin"><span>GP</span><input type="number" id="gp"></div>
+                            <div class="coin"><span>PP</span><input type="number" id="pp"></div>
+                        </div>
+                        <div class="equip-text">
+                            <textarea id="equipment"></textarea>
+                            <label class="box-label">Equipment</label>
                         </div>
                     </div>
                 </div>
 
-                <div class="panel attacks-panel">
-                    <h3>Ataques e Conjuração</h3>
-                    <textarea id="attacks" placeholder="Nome | Bônus | Dano&#10;Adaga | +5 | 1d4+3 Perfurante"></textarea>
+                <div class="col-right">
+                    <div class="traits-container">
+                        <div class="trait-small"><textarea id="personality"></textarea><label>Personality Traits</label></div>
+                        <div class="trait-small"><textarea id="ideals"></textarea><label>Ideals</label></div>
+                        <div class="trait-small"><textarea id="bonds"></textarea><label>Bonds</label></div>
+                        <div class="trait-small"><textarea id="flaws"></textarea><label>Flaws</label></div>
+                    </div>
+                    <div class="features-box">
+                        <textarea id="features"></textarea>
+                        <label class="box-label">Features & Traits</label>
+                    </div>
                 </div>
+            </main>
+        </section>
 
-                <div class="panel equipment-panel">
-                    <div class="money-col">
-                        <div class="coin"><span>PC</span><input type="number" id="cp"></div>
-                        <div class="coin"><span>PP</span><input type="number" id="sp"></div>
-                        <div class="coin"><span>PE</span><input type="number" id="ep"></div>
-                        <div class="coin"><span>PO</span><input type="number" id="gp"></div>
-                        <div class="coin"><span>PL</span><input type="number" id="pp"></div>
-                    </div>
-                    <div class="inv-col">
-                        <h3>Equipamento</h3>
-                        <textarea id="equipment" placeholder="Lista de itens..."></textarea>
-                    </div>
+        <section class="sheet-page" id="page-2">
+            <header class="page-header"><h2>Character Appearance & Backstory</h2></header>
+            <div class="bio-grid">
+                <div class="bio-item"><input type="text" id="age"><label>Age</label></div>
+                <div class="bio-item"><input type="text" id="height"><label>Height</label></div>
+                <div class="bio-item"><input type="text" id="weight"><label>Weight</label></div>
+                <div class="bio-item"><input type="text" id="eyes"><label>Eyes</label></div>
+                <div class="bio-item"><input type="text" id="skin"><label>Skin</label></div>
+                <div class="bio-item"><input type="text" id="hair"><label>Hair</label></div>
+            </div>
+            <div class="page2-layout">
+                <div class="col-left-p2">
+                    <div class="img-placeholder"><label>Character Appearance</label></div>
+                    <div class="backstory-box"><textarea id="backstory_text"></textarea><label class="box-label">Character Backstory</label></div>
                 </div>
-            </section>
+                <div class="col-right-p2">
+                    <div class="allies-box"><textarea id="allies_text"></textarea><label class="box-label">Allies & Organizations</label></div>
+                    <div class="treasure-box"><textarea id="treasure_text"></textarea><label class="box-label">Treasure</label></div>
+                </div>
+            </div>
+        </section>
 
-            <aside class="sidebar-right">
-                
-                <div class="panel traits-panel">
-                    <div class="trait-box">
-                        <label>Traços de Personalidade</label>
-                        <textarea id="personality"></textarea>
-                    </div>
-                    <div class="trait-box">
-                        <label>Ideais</label>
-                        <textarea id="ideals"></textarea>
-                    </div>
-                    <div class="trait-box">
-                        <label>Vínculos</label>
-                        <textarea id="bonds"></textarea>
-                    </div>
-                    <div class="trait-box">
-                        <label>Defeitos</label>
-                        <textarea id="flaws"></textarea>
-                    </div>
+        <section class="sheet-page" id="page-3">
+            <header class="spell-header">
+                <div class="spell-meta"><input type="text" id="spell_class"><label>Spellcasting Class</label></div>
+                <div class="spell-meta"><input type="text" id="spell_ability"><label>Spellcasting Ability</label></div>
+                <div class="spell-meta"><input type="number" id="spell_save_dc"><label>Spell Save DC</label></div>
+                <div class="spell-meta"><input type="number" id="spell_attack_bonus"><label>Spell Attack Bonus</label></div>
+            </header>
+            <div class="spells-grid">
+                <div class="spell-level-box">
+                    <div class="lvl-header">0 - Cantrips</div>
+                    <div id="spells-0"></div>
                 </div>
+                <div class="spell-level-box">
+                    <div class="lvl-header">1 <span class="slots">Slots Total <input type="number" id="slots_total_1"> Expended <input type="number" id="slots_exp_1"></span></div>
+                    <div id="spells-1"></div>
+                </div>
+                <div class="spell-level-box">
+                    <div class="lvl-header">2 <span class="slots">Slots Total <input type="number" id="slots_total_2"> Expended <input type="number" id="slots_exp_2"></span></div>
+                    <div id="spells-2"></div>
+                </div>
+                <div class="spell-level-box">
+                    <div class="lvl-header">3 <span class="slots">Slots Total <input type="number" id="slots_total_3"> Expended <input type="number" id="slots_exp_3"></span></div>
+                    <div id="spells-3"></div>
+                </div>
+            </div>
+        </section>
 
-                <div class="panel features-panel">
-                    <h3>Características e Talentos</h3>
-                    <textarea id="features" placeholder="Ex: Ataque Furtivo, Ação Ardilosa..."></textarea>
-                </div>
-
-                <div class="panel prof-panel">
-                    <h3>Outras Proficiências & Idiomas</h3>
-                    <textarea id="proficiencies"></textarea>
-                </div>
-
-                <div class="panel bio-panel">
-                    <h3>Biografia & Aparência</h3>
-                    <div class="bio-grid">
-                        <input type="text" id="age" placeholder="Idade">
-                        <input type="text" id="height" placeholder="Altura">
-                        <input type="text" id="weight" placeholder="Peso">
-                        <input type="text" id="eyes" placeholder="Olhos">
-                        <input type="text" id="skin" placeholder="Pele">
-                        <input type="text" id="hair" placeholder="Cabelo">
-                    </div>
-                    <textarea id="backstory" placeholder="História do personagem..."></textarea>
-                </div>
-            </aside>
-        </main>
     </div>
     <script src="script.js"></script>
 </body>
