@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grimório D&D - Ziggy Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <div id="start-screen" class="overlay active">
+        <div class="modal-box">
+            <h1><i class="fa-solid fa-dragon"></i> Grimório do Jogador</h1>
+            <div class="drop-zone" id="drop-zone">
+                <i class="fa-solid fa-file-import fa-3x"></i>
+                <p>Arraste seu <strong>.json</strong> aqui</p>
+                <button class="btn-primary" onclick="newSheet()">Ou crie uma nova ficha</button>
+                <input type="file" id="file-input" accept=".json" onchange="loadFromFile(this)" hidden>
+                <button class="btn-text" onclick="document.getElementById('file-input').click()">Buscar arquivo</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="app" class="app-container hidden">
+        
+        <header class="top-bar">
+            <div class="char-identity">
+                <input type="text" id="charName" placeholder="Nome do Personagem" class="input-title">
+                <div class="sub-info">
+                    <input type="text" id="classLevel" placeholder="Classe e Nível">
+                    <input type="text" id="background" placeholder="Antecedente">
+                    <input type="text" id="race" placeholder="Raça">
+                    <input type="text" id="alignment" placeholder="Tendência">
+                    <input type="text" id="player" placeholder="Jogador">
+                    <input type="number" id="xp" placeholder="XP">
+                </div>
+            </div>
+            <div class="app-controls">
+                <button onclick="saveSheet()" class="btn-save"><i class="fa-solid fa-floppy-disk"></i> Salvar</button>
+                <button onclick="closeSheet()" class="btn-danger"><i class="fa-solid fa-right-from-bracket"></i> Sair</button>
+            </div>
+        </header>
+
+        <main class="grid-layout">
+            
+            <aside class="sidebar-left">
+                <div class="panel attributes-panel">
+                    <div class="attr-row" data-stat="str">
+                        <label>FORÇA</label>
+                        <input type="number" id="str" value="10" oninput="updateModifiers()">
+                        <div class="mod-box" id="str-mod">+0</div>
+                    </div>
+                    <div class="attr-row" data-stat="dex">
+                        <label>DESTREZA</label>
+                        <input type="number" id="dex" value="10" oninput="updateModifiers()">
+                        <div class="mod-box" id="dex-mod">+0</div>
+                    </div>
+                    <div class="attr-row" data-stat="con">
+                        <label>CONSTITUIÇÃO</label>
+                        <input type="number" id="con" value="10" oninput="updateModifiers()">
+                        <div class="mod-box" id="con-mod">+0</div>
+                    </div>
+                    <div class="attr-row" data-stat="int">
+                        <label>INTELIGÊNCIA</label>
+                        <input type="number" id="int" value="10" oninput="updateModifiers()">
+                        <div class="mod-box" id="int-mod">+0</div>
+                    </div>
+                    <div class="attr-row" data-stat="wis">
+                        <label>SABEDORIA</label>
+                        <input type="number" id="wis" value="10" oninput="updateModifiers()">
+                        <div class="mod-box" id="wis-mod">+0</div>
+                    </div>
+                    <div class="attr-row" data-stat="cha">
+                        <label>CARISMA</label>
+                        <input type="number" id="cha" value="10" oninput="updateModifiers()">
+                        <div class="mod-box" id="cha-mod">+0</div>
+                    </div>
+                </div>
+
+                <div class="panel misc-stats">
+                    <div class="stat-mini">
+                        <label>Inspiração</label>
+                        <input type="checkbox" id="inspiration" class="checkbox-gem">
+                    </div>
+                    <div class="stat-mini">
+                        <label>Proficiência</label>
+                        <input type="number" id="profBonus" value="2" oninput="updateModifiers()">
+                    </div>
+                    <div class="stat-mini">
+                        <label>Perc. Passiva</label>
+                        <span id="passiveWis" class="passive-val">10</span>
+                    </div>
+                </div>
+
+                <div class="panel list-panel">
+                    <h3>Salvaguardas</h3>
+                    <div id="saving-throws-list" class="skill-list">
+                        </div>
+                </div>
+
+                <div class="panel list-panel">
+                    <h3>Perícias</h3>
+                    <div id="skills-list" class="skill-list">
+                        </div>
+                </div>
+            </aside>
+
+            <section class="center-stage">
+                
+                <div class="combat-header">
+                    <div class="combat-stat shield">
+                        <label>CA</label>
+                        <input type="number" id="ac" value="10">
+                    </div>
+                    <div class="combat-stat">
+                        <label>Iniciativa</label>
+                        <input type="number" id="initiative" value="0">
+                    </div>
+                    <div class="combat-stat">
+                        <label>Desloc.</label>
+                        <input type="text" id="speed" value="9m">
+                    </div>
+                </div>
+
+                <div class="hp-container panel">
+                    <div class="hp-top">
+                        <div class="hp-field">
+                            <label>HP Máximo</label>
+                            <input type="number" id="hpMax" value="10">
+                        </div>
+                        <div class="hp-field">
+                            <label>HP Temporário</label>
+                            <input type="number" id="hpTemp" value="0">
+                        </div>
+                    </div>
+                    <div class="hp-main">
+                        <label>HP ATUAL</label>
+                        <input type="number" id="hpCurrent" value="10">
+                    </div>
+                    <div class="hp-footer">
+                        <div class="hit-dice">
+                            <label>Dados de Vida</label>
+                            <div class="hd-inputs">
+                                <input type="text" id="hitDiceTotal" placeholder="Total">
+                                <input type="text" id="hitDiceCurrent" placeholder="Atual">
+                            </div>
+                        </div>
+                        <div class="death-saves">
+                            <label>Testes de Morte</label>
+                            <div class="ds-row">
+                                <span>Sucesso</span>
+                                <input type="checkbox" id="ds_s1"><input type="checkbox" id="ds_s2"><input type="checkbox" id="ds_s3">
+                            </div>
+                            <div class="ds-row">
+                                <span>Falha</span>
+                                <input type="checkbox" id="ds_f1"><input type="checkbox" id="ds_f2"><input type="checkbox" id="ds_f3">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel attacks-panel">
+                    <h3>Ataques e Conjuração</h3>
+                    <textarea id="attacks" placeholder="Nome | Bônus | Dano&#10;Adaga | +5 | 1d4+3 Perfurante"></textarea>
+                </div>
+
+                <div class="panel equipment-panel">
+                    <div class="money-col">
+                        <div class="coin"><span>PC</span><input type="number" id="cp"></div>
+                        <div class="coin"><span>PP</span><input type="number" id="sp"></div>
+                        <div class="coin"><span>PE</span><input type="number" id="ep"></div>
+                        <div class="coin"><span>PO</span><input type="number" id="gp"></div>
+                        <div class="coin"><span>PL</span><input type="number" id="pp"></div>
+                    </div>
+                    <div class="inv-col">
+                        <h3>Equipamento</h3>
+                        <textarea id="equipment" placeholder="Lista de itens..."></textarea>
+                    </div>
+                </div>
+            </section>
+
+            <aside class="sidebar-right">
+                
+                <div class="panel traits-panel">
+                    <div class="trait-box">
+                        <label>Traços de Personalidade</label>
+                        <textarea id="personality"></textarea>
+                    </div>
+                    <div class="trait-box">
+                        <label>Ideais</label>
+                        <textarea id="ideals"></textarea>
+                    </div>
+                    <div class="trait-box">
+                        <label>Vínculos</label>
+                        <textarea id="bonds"></textarea>
+                    </div>
+                    <div class="trait-box">
+                        <label>Defeitos</label>
+                        <textarea id="flaws"></textarea>
+                    </div>
+                </div>
+
+                <div class="panel features-panel">
+                    <h3>Características e Talentos</h3>
+                    <textarea id="features" placeholder="Ex: Ataque Furtivo, Ação Ardilosa..."></textarea>
+                </div>
+
+                <div class="panel prof-panel">
+                    <h3>Outras Proficiências & Idiomas</h3>
+                    <textarea id="proficiencies"></textarea>
+                </div>
+
+                <div class="panel bio-panel">
+                    <h3>Biografia & Aparência</h3>
+                    <div class="bio-grid">
+                        <input type="text" id="age" placeholder="Idade">
+                        <input type="text" id="height" placeholder="Altura">
+                        <input type="text" id="weight" placeholder="Peso">
+                        <input type="text" id="eyes" placeholder="Olhos">
+                        <input type="text" id="skin" placeholder="Pele">
+                        <input type="text" id="hair" placeholder="Cabelo">
+                    </div>
+                    <textarea id="backstory" placeholder="História do personagem..."></textarea>
+                </div>
+            </aside>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
