@@ -12,7 +12,7 @@ O sistema permite que um grupo de RPG crie e gerencie suas fichas em um ambiente
 
 - **Autenticação Segura (JWT):** Apenas usuários autorizados (o Mestre) podem acessar as fichas.
 - **Fichas Protegidas por Senha:** Cada ficha possui uma "senha de edição". Todos podem visualizar as fichas, mas apenas quem tem a senha pode salvar alterações ou excluir o personagem.
-- **Design Mobile-First:** A interface foi reconstruída com CSS Vanilla moderno para funcionar perfeitamente em telas pequenas. No celular, o layout de visualização permite "scroll" horizontal preservando o visual da ficha de papel, enquanto o modo de edição exibe tudo em uma coluna fácil de preencher.
+- **Design Mobile-First:** A interface foi reconstruída com CSS Vanilla moderno para funcionar perfeitamente em telas pequenas. No celular, o layout de visualização permite "scroll" horizontal preservando o visual da ficha de papel.
 - **Clean Architecture:** O backend foi meticulosamente organizado seguindo os princípios de Clean Architecture, separando Core de Domínio, Casos de Uso (Application), Infraestrutura (Banco de Dados e Segurança) e Endpoints (API).
 
 ![Deletando uma ficha - Demo](docs/assets/delete_demo.webp)
