@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using DnDSheetApi.Models;
+using DnDSheetApi.Domain.Entities;
 
-namespace DnDSheetApi.Data;
+namespace DnDSheetApi.Infrastructure.Data;
 
 public class AppDbContext : DbContext
 {

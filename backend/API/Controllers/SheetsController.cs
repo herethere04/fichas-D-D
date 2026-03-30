@@ -1,23 +1,22 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using DnDSheetApi.Data;
-using DnDSheetApi.DTOs;
-using DnDSheetApi.Models;
-using DnDSheetApi.Services;
+using DnDSheetApi.Application.DTOs;
+using DnDSheetApi.Application.Interfaces;
+using DnDSheetApi.Domain.Entities;
+using DnDSheetApi.Infrastructure.Security;
 
-namespace DnDSheetApi.Controllers;
+namespace DnDSheetApi.API.Controllers;
 
 [ApiController]
 [Route("api/sheets")]
 public class SheetsController : ControllerBase
 {
-    private readonly AppDbContext _db;
+    private readonly ISheetService _sheetService;
     private readonly RateLimitService _rateLimiter;
 
-    public SheetsController(AppDbContext db, RateLimitService rateLimiter)
+    public SheetsController(ISheetService sheetService, RateLimitService rateLimiter)
     {
-        _db = db;
+        _sheetService = sheetService;
         _rateLimiter = rateLimiter;
     }
 
@@ -28,18 +27,17 @@ public class SheetsController : ControllerBase
     [Authorize]
     public async Task<IActionResult> GetAll()
     {
-        var sheets = await _db.CharacterSheets
-            .OrderByDescending(s => s.UpdatedAt)
-            .Select(s => new SheetListItem
-            {
-                Id = s.Id,
-                CharacterName = s.CharacterName,
-                CreatedAt = s.CreatedAt,
-                UpdatedAt = s.UpdatedAt
-            })
-            .ToListAsync();
+        var sheets = await _sheetService.GetAllSheetsAsync();
+        
+        var list = sheets.Select(s => new SheetListItem
+        {
+            Id = s.Id,
+            CharacterName = s.CharacterName,
+            CreatedAt = s.CreatedAt,
+            UpdatedAt = s.UpdatedAt
+        });
 
-        return Ok(sheets);
+        return Ok(list);
     }
 
     /// <summary>
@@ -48,7 +46,7 @@ public class SheetsController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
-        var sheet = await _db.CharacterSheets.FindAsync(id);
+        var sheet = await _sheetService.GetSheetByIdAsync(id);
         if (sheet == null)
             return NotFound(new { message = "Ficha não encontrada." });
 
@@ -72,17 +70,7 @@ public class SheetsController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        var sheet = new CharacterSheet
-        {
-            CharacterName = request.CharacterName.Trim(),
-            EditPasswordHash = BCrypt.Net.BCrypt.HashPassword(request.EditPassword),
-            SheetData = "{}",
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow
-        };
-
-        _db.CharacterSheets.Add(sheet);
-        await _db.SaveChangesAsync();
+        var sheet = await _sheetService.CreateSheetAsync(request.CharacterName.Trim(), request.EditPassword);
 
         return CreatedAtAction(nameof(GetById), new { id = sheet.Id }, new SheetListItem
         {
@@ -106,16 +94,10 @@ public class SheetsController : ControllerBase
         if (_rateLimiter.IsRateLimited($"update:{ip}", 10, TimeSpan.FromMinutes(1)))
             return StatusCode(429, new { message = "Muitas tentativas. Tente novamente em 1 minuto." });
 
-        var sheet = await _db.CharacterSheets.FindAsync(id);
-        if (sheet == null)
-            return NotFound(new { message = "Ficha não encontrada." });
-
-        if (!BCrypt.Net.BCrypt.Verify(request.EditPassword, sheet.EditPasswordHash))
-            return StatusCode(403, new { message = "Senha de edição incorreta." });
-
-        sheet.SheetData = request.SheetData;
-        sheet.UpdatedAt = DateTime.UtcNow;
-        await _db.SaveChangesAsync();
+        var success = await _sheetService.UpdateSheetAsync(id, request.EditPassword, request.SheetData);
+        
+        if (!success)
+            return StatusCode(403, new { message = "Senha de edição incorreta ou ficha não encontrada." });
 
         return Ok(new { message = "Ficha atualizada com sucesso." });
     }
@@ -127,15 +109,10 @@ public class SheetsController : ControllerBase
     [Authorize]
     public async Task<IActionResult> Delete(int id, [FromBody] VerifyPasswordRequest request)
     {
-        var sheet = await _db.CharacterSheets.FindAsync(id);
-        if (sheet == null)
-            return NotFound(new { message = "Ficha não encontrada." });
-
-        if (!BCrypt.Net.BCrypt.Verify(request.EditPassword, sheet.EditPasswordHash))
-            return StatusCode(403, new { message = "Senha de edição incorreta." });
-
-        _db.CharacterSheets.Remove(sheet);
-        await _db.SaveChangesAsync();
+        var success = await _sheetService.DeleteSheetAsync(id, request.EditPassword);
+        
+        if (!success)
+            return StatusCode(403, new { message = "Senha de edição incorreta ou ficha não encontrada." });
 
         return Ok(new { message = "Ficha removida com sucesso." });
     }
@@ -153,12 +130,10 @@ public class SheetsController : ControllerBase
         if (_rateLimiter.IsRateLimited($"verify:{ip}:{id}", 10, TimeSpan.FromMinutes(1)))
             return StatusCode(429, new { message = "Muitas tentativas. Tente novamente em 1 minuto." });
 
-        var sheet = await _db.CharacterSheets.FindAsync(id);
-        if (sheet == null)
-            return NotFound(new { message = "Ficha não encontrada." });
-
-        if (!BCrypt.Net.BCrypt.Verify(request.EditPassword, sheet.EditPasswordHash))
-            return StatusCode(403, new { message = "Senha incorreta." });
+        var isValid = await _sheetService.VerifyPasswordAsync(id, request.EditPassword);
+        
+        if (!isValid)
+            return StatusCode(403, new { message = "Senha incorreta ou ficha não encontrada." });
 
         return Ok(new { message = "Senha verificada. Edição liberada." });
     }

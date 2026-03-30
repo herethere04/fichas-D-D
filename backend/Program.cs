@@ -2,8 +2,12 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using DnDSheetApi.Data;
-using DnDSheetApi.Services;
+using DnDSheetApi.Application.Interfaces;
+using DnDSheetApi.Application.Services;
+using DnDSheetApi.Domain.Interfaces;
+using DnDSheetApi.Infrastructure.Data;
+using DnDSheetApi.Infrastructure.Repositories;
+using DnDSheetApi.Infrastructure.Security;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +34,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 
+// === DEPENDENCY INJECTION ===
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ISheetRepository, SheetRepository>();
+builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ISheetService, SheetService>();
+
 // === RATE LIMITER (Singleton) ===
 builder.Services.AddSingleton<RateLimitService>();
 
@@ -54,7 +65,7 @@ using (var scope = app.Services.CreateScope())
     // Seed admin user if not exists
     if (!db.Users.Any(u => u.Username == "admin"))
     {
-        db.Users.Add(new DnDSheetApi.Models.User
+        db.Users.Add(new DnDSheetApi.Domain.Entities.User
         {
             Username = "admin",
             PasswordHash = BCrypt.Net.BCrypt.HashPassword("mestrejohn")

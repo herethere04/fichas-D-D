@@ -1,6 +1,6 @@
 using System.Collections.Concurrent;
 
-namespace DnDSheetApi.Services;
+namespace DnDSheetApi.Infrastructure.Security;
 
 public class RateLimitService
 {

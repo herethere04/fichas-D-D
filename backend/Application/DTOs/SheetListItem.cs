@@ -1,4 +1,4 @@
-namespace DnDSheetApi.DTOs;
+namespace DnDSheetApi.Application.DTOs;
 
 public class SheetListItem
 {

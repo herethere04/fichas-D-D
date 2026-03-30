@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace DnDSheetApi.Models;
+namespace DnDSheetApi.Domain.Entities;
 
 public class CharacterSheet
 {

@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace DnDSheetApi.Models;
+namespace DnDSheetApi.Domain.Entities;
 
 public class User
 {
