@@ -32,7 +32,7 @@ const api = {
 
         const response = await fetch(`${API_BASE}${path}`, options);
 
-        if (response.status === 401) {
+        if (response.status === 401 && requireAuth) {
             this.clearToken();
             window.location.href = 'login.html';
             return null;

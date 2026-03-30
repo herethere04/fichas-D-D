@@ -1,0 +1,1 @@
+﻿using System; using Microsoft.Extensions.Configuration; var cb = new ConfigurationBuilder().SetBasePath(System.IO.Directory.GetCurrentDirectory()).AddJsonFile("app.json").Build(); try { Console.WriteLine(cb.GetSection("Jwt")["ExpireHours"]); Console.WriteLine(int.Parse(cb.GetSection("Jwt")["ExpireHours"]!)); } catch(Exception e) { Console.WriteLine(e.GetType().Name); }

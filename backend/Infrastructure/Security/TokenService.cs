@@ -33,7 +33,7 @@ public class TokenService : ITokenService
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.Username)
             }),
-            Expires = DateTime.UtcNow.AddHours(int.Parse(jwtSettings["ExpireHours"]!)),
+            Expires = DateTime.UtcNow.AddHours(int.TryParse(jwtSettings["ExpireHours"], out var h) ? h : 12),
             Issuer = jwtSettings["Issuer"],
             Audience = jwtSettings["Audience"],
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
