@@ -220,3 +220,27 @@ function showToast(message, type = 'info') {
 // Drag & Drop (disabled in view mode)
 document.body.addEventListener('dragover', e => e.preventDefault());
 document.body.addEventListener('drop', e => { e.preventDefault(); });
+
+// === FIXED NAV BAR (compensate pinch-to-zoom) ===
+(function() {
+    const nav = document.querySelector('.sheet-nav');
+    if (!nav || !window.visualViewport) return;
+
+    function updateNavBar() {
+        const vv = window.visualViewport;
+        const scale = vv.scale;
+
+        // Counter-scale so the nav stays the same visual size
+        nav.style.transform = `scale(${1 / scale})`;
+        nav.style.transformOrigin = 'top left';
+        // Compensate width so it still spans the full visible viewport
+        nav.style.width = `${vv.width * scale}px`;
+        // Position at the top of the visible viewport
+        nav.style.top = `${vv.offsetTop * scale}px`;
+        nav.style.left = `${vv.offsetLeft * scale}px`;
+    }
+
+    window.visualViewport.addEventListener('resize', updateNavBar);
+    window.visualViewport.addEventListener('scroll', updateNavBar);
+    updateNavBar();
+})();

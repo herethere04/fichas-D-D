@@ -604,6 +604,7 @@ label { display: block; text-transform: uppercase; font-size: 0.65rem; color: va
     z-index: 500;
     padding: 20px;
     animation: fadeIn 0.2s ease;
+    overflow-y: auto;
 }
 
 .modal-card {
@@ -766,6 +767,18 @@ label { display: block; text-transform: uppercase; font-size: 0.65rem; color: va
 
     .card-info h3 {
         font-size: 0.95rem;
+    }
+
+    /* Modals: position near top so keyboard doesn't cover them */
+    .modal-overlay {
+        align-items: flex-start;
+        padding-top: 60px;
+    }
+
+    /* Login: position near top so keyboard doesn't cover */
+    .login-body {
+        align-items: flex-start;
+        padding-top: 40px;
     }
 }
 
