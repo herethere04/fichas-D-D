@@ -9,7 +9,6 @@
 *.sln.docstates
 *.log
 *.txt
-*.webp
 *.png
 node_modules/
 dist/

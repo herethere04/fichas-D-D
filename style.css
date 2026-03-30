@@ -729,140 +729,23 @@ label { display: block; text-transform: uppercase; font-size: 0.65rem; color: va
    RESPONSIVE DESIGN
    ======================================== */
 
-/* Tablet (≤ 900px) - ONLY in edit mode */
-@media (max-width: 900px) {
-    .edit-mode .main-grid {
-        grid-template-columns: 1fr 1fr;
-    }
-    .edit-mode .col-right {
-        grid-column: 1 / -1;
-    }
-    .edit-mode .spells-grid {
-        grid-template-columns: 1fr 1fr;
-    }
-    .edit-mode .bio-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-
 /* Mobile (≤ 768px) */
 @media (max-width: 768px) {
     body {
         padding: 10px;
         padding-top: 65px;
+        display: block;
     }
 
-    /* Preserve desktop layout logic in View Mode (allow native pan/zoom) */
-    body:not(.edit-mode) {
-        display: block; /* Override default flex justify-content: center which clips left */
-    }
-    body:not(.edit-mode) .sheet-page {
+    /* Keep desktop layout in both view and edit mode (pan/zoom) */
+    .sheet-page {
         min-width: 900px;
         margin: 0;
-    }
-
-    .sheet-page {
         padding: 15px;
-    }
-
-    /* Sheet layout changes ONLY in edit mode */
-    .edit-mode .header-section {
-        flex-direction: column;
-        gap: 10px;
-    }
-    .edit-mode .header-name { width: 100%; }
-    .edit-mode .header-meta { width: 100%; }
-    .edit-mode .meta-row { flex-direction: column; gap: 8px; }
-
-    .edit-mode .main-grid {
-        grid-template-columns: 1fr;
-    }
-    .edit-mode .col-right {
-        grid-column: auto;
-    }
-
-    .edit-mode .page2-layout {
-        grid-template-columns: 1fr;
-    }
-
-    .edit-mode .spells-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .edit-mode .spell-header {
-        flex-direction: column;
-        gap: 8px;
-    }
-
-    .edit-mode .bio-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .edit-mode .dice-death-row {
-        flex-direction: column;
-    }
-
-    .edit-mode .combat-header {
-        flex-direction: row;
-        flex-wrap: wrap;
-    }
-
-    .sheet-nav {
-        padding: 10px 12px;
-    }
-    .nav-sheet-title {
-        font-size: 0.9rem;
-    }
-    .nav-back {
-        font-size: 0.8rem;
     }
 
     .fichas-title {
         font-size: 1.2rem;
-    }
-
-    .edit-mode .features-box textarea {
-        min-height: 250px;
-    }
-
-    .edit-mode #attacks_text {
-        height: 150px;
-    }
-    .edit-mode .equip-text textarea {
-        height: 200px;
-    }
-}
-
-/* Small Mobile (≤ 480px) */
-@media (max-width: 480px) {
-    body {
-        padding: 5px;
-        padding-top: 60px;
-    }
-
-    .edit-mode .sheet-page {
-        padding: 10px;
-        border-radius: 8px;
-    }
-
-    .edit-mode .header-name input {
-        font-size: 1.2rem;
-        height: 40px;
-    }
-
-    .edit-mode .mod-big {
-        font-size: 1.4rem;
-        height: 40px;
-    }
-
-    .edit-mode .shield-box input {
-        font-size: 1.2rem;
-        padding: 8px;
-    }
-
-    .edit-mode .big-hp-input {
-        font-size: 1.5rem;
-        height: 50px;
     }
 
     .login-card {
@@ -877,13 +760,32 @@ label { display: block; text-transform: uppercase; font-size: 0.65rem; color: va
         font-size: 2.5rem;
     }
 
-    .btn-edit {
-        padding: 5px 10px;
-        font-size: 0.7rem;
+    .sheet-card {
+        padding: 14px 15px;
     }
 
-    .nav-sheet-title {
-        font-size: 0.8rem;
+    .card-info h3 {
+        font-size: 0.95rem;
+    }
+}
+
+/* Small Mobile (≤ 480px) */
+@media (max-width: 480px) {
+    body {
+        padding: 5px;
+        padding-top: 60px;
+    }
+
+    .login-card {
+        padding: 30px 20px;
+    }
+
+    .login-title {
+        font-size: 1.6rem;
+    }
+
+    .login-icon {
+        font-size: 2.5rem;
     }
 
     .sheet-card {
@@ -893,15 +795,11 @@ label { display: block; text-transform: uppercase; font-size: 0.65rem; color: va
     .card-info h3 {
         font-size: 0.95rem;
     }
-
-    .edit-mode .bio-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
 }
 
-/* View mode on mobile: allow horizontal scroll for full sheet */
+/* Both modes on mobile: allow horizontal scroll for full sheet */
 @media (max-width: 768px) {
-    .sheet-container:not(.edit-mode) {
+    .sheet-container {
         min-width: 1100px;
     }
 }
