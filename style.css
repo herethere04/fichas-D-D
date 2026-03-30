@@ -3,9 +3,13 @@
     --panel-bg: #1e1e24;
     --input-bg: #2b2b36;
     --gold: #c5a059;
+    --gold-glow: rgba(197, 160, 89, 0.3);
     --text: #e0e0e0;
     --text-muted: #888;
     --radius: 12px;
+    --success: #4caf50;
+    --error: #e74c3c;
+    --info: #3498db;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -15,24 +19,138 @@ body {
     color: var(--text); 
     font-family: 'Roboto Condensed', sans-serif; 
     padding: 20px; 
+    padding-top: 70px;
     display: flex; 
     justify-content: center; 
 }
 
-/* CONTROLS */
+/* ========================================
+   TOP NAVIGATION BAR (Sheet Page)
+   ======================================== */
+.sheet-nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 200;
+    background: linear-gradient(135deg, #1a1a22, #252530);
+    border-bottom: 2px solid var(--gold);
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+
+.nav-back {
+    color: var(--gold);
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: color 0.2s;
+    white-space: nowrap;
+}
+.nav-back:hover { color: #e0c070; }
+
+.nav-sheet-title {
+    font-family: 'Cinzel', serif;
+    font-size: 1.1rem;
+    color: var(--gold);
+    flex: 1;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.nav-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-edit {
+    background: transparent;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    padding: 6px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: bold;
+    transition: all 0.3s;
+    white-space: nowrap;
+}
+.btn-edit:hover { background: var(--gold-glow); }
+.btn-edit.active {
+    background: var(--gold);
+    color: #121212;
+}
+
+/* ========================================
+   CONTROLS (Save/Load) - OLD, now in nav
+   ======================================== */
 .controls { position: fixed; top: 20px; right: 20px; z-index: 100; display: flex; flex-direction: column; gap: 10px; }
-.btn-save, .btn-load { background: var(--gold); border: none; padding: 10px; cursor: pointer; font-weight: bold; border-radius: 8px; }
+.btn-save, .btn-load { 
+    background: var(--gold); 
+    border: none; 
+    padding: 8px 16px; 
+    cursor: pointer; 
+    font-weight: bold; 
+    border-radius: 20px;
+    color: #121212;
+    font-size: 0.8rem;
+    transition: all 0.3s;
+    white-space: nowrap;
+}
+.btn-save:hover, .btn-load:hover { 
+    background: #e0c070; 
+    box-shadow: 0 0 15px var(--gold-glow);
+}
+.btn-save:disabled { opacity: 0.5; cursor: not-allowed; }
 
-/* MAIN CONTAINER */
+/* ========================================
+   MAIN CONTAINER
+   ======================================== */
 .sheet-container { width: 100%; max-width: 1100px; display: flex; flex-direction: column; gap: 40px; }
-.sheet-page { background: var(--panel-bg); padding: 30px; border: 2px solid var(--gold); box-shadow: 0 0 20px rgba(0,0,0,0.5); position: relative; border-radius: 10px; }
+.sheet-container.edit-mode .sheet-page { border-color: var(--success); box-shadow: 0 0 20px rgba(76, 175, 80, 0.15); }
 
-/* INPUTS GERAIS */
-input, textarea { background: var(--input-bg); border: none; color: var(--text); width: 100%; font-family: inherit; padding: 4px; border-bottom: 1px solid #444; border-radius: 4px; }
+.sheet-page { 
+    background: var(--panel-bg); 
+    padding: 30px; 
+    border: 2px solid var(--gold); 
+    box-shadow: 0 0 20px rgba(0,0,0,0.5); 
+    position: relative; 
+    border-radius: 10px; 
+}
+
+/* ========================================
+   INPUTS GERAIS
+   ======================================== */
+input, textarea { 
+    background: var(--input-bg); 
+    border: none; 
+    color: var(--text); 
+    width: 100%; 
+    font-family: inherit; 
+    padding: 4px; 
+    border-bottom: 1px solid #444; 
+    border-radius: 4px;
+    transition: border-color 0.3s, background 0.3s;
+}
 input:focus, textarea:focus { outline: none; border-bottom-color: var(--gold); background: #333; }
+input:disabled, textarea:disabled { 
+    opacity: 0.85; 
+    cursor: default;
+    background: rgba(43, 43, 54, 0.5);
+}
+
 label { display: block; text-transform: uppercase; font-size: 0.65rem; color: var(--text-muted); font-weight: bold; text-align: center; margin-top: 4px; letter-spacing: 0.5px; }
 
-/* HEADER */
+/* ========================================
+   HEADER
+   ======================================== */
 .header-section { display: flex; gap: 20px; border-bottom: 2px solid var(--gold); padding-bottom: 20px; margin-bottom: 20px; }
 .header-name { width: 30%; } 
 .header-name input { font-size: 1.5rem; font-family: 'Cinzel'; height: 50px; }
@@ -59,23 +177,20 @@ label { display: block; text-transform: uppercase; font-size: 0.65rem; color: va
 .mini-box { border: 1px solid #444; padding: 5px; border-radius: var(--radius); flex: 1; }
 .mini-box input { text-align: center; font-size: 1.2rem; }
 
-/* CORREÇÃO DAS PERÍCIAS/SALVAGUARDAS (Esquerda/Direita) */
 .list-box { border: 1px solid #444; padding: 10px; margin-bottom: 10px; border-radius: var(--radius); }
 .list-row { 
     display: flex; 
     align-items: center; 
     font-size: 0.75rem; 
-    margin-bottom: 8px; /* Mais espaço entre linhas */
+    margin-bottom: 8px;
     width: 100%;
 }
-/* Checkbox e Bônus ficam na esquerda */
 .list-row input[type="checkbox"] { width: auto; margin-right: 8px; cursor: pointer; }
 .bonus-input { width: 30px; text-align: center; margin-right: 10px; border: none; border-bottom: 1px solid #555; font-size: 0.8rem; flex-shrink: 0; }
-/* Nome vai para a direita */
 .list-row span { 
     text-align: right; 
-    flex-grow: 1; /* Ocupa todo o espaço restante */
-    white-space: nowrap; /* Não quebra linha (ex: Acrobatics (Dex)) */
+    flex-grow: 1;
+    white-space: nowrap;
     overflow: visible;
 }
 
@@ -99,7 +214,9 @@ label { display: block; text-transform: uppercase; font-size: 0.65rem; color: va
 .dice-death-row { display: flex; gap: 10px; margin-bottom: 10px; align-items: stretch; } 
 .hit-dice-box, .death-saves-box { flex: 1; border: 1px solid #444; padding: 10px; border-radius: var(--radius); display: flex; flex-direction: column; justify-content: space-between; }
 .big-dice-input { font-size: 1.5rem; text-align: center; border: none; background: transparent; width: 100%; margin: 10px 0; }
-.ds-line { display: flex; align-items: center; justify-content: flex-end; gap: 5px; font-size: 0.7rem; margin-bottom: 5px; }
+.ds-line { display: flex; align-items: center; justify-content: flex-end; gap: 8px; font-size: 0.7rem; margin-bottom: 5px; }
+.ds-line label { width: 55px; text-align: right; margin: 0; flex-shrink: 0; }
+.ds-line input[type="checkbox"] { width: 16px; height: 16px; margin: 0; accent-color: var(--gold); cursor: pointer; flex-shrink: 0; }
 
 .attacks-section { border: 1px solid #444; padding: 10px; border-radius: var(--radius); background: rgba(0,0,0,0.1); }
 .attacks-table-header { display: flex; font-size: 0.6rem; color: var(--text-muted); font-weight: bold; gap: 5px; padding-bottom: 5px; margin-bottom: 5px; border-bottom: 1px solid #333; }
@@ -113,6 +230,7 @@ label { display: block; text-transform: uppercase; font-size: 0.65rem; color: va
 .coin { display: flex; flex-direction: column; align-items: center; background: black; padding: 3px; border-radius: 8px; border: 1px solid #333; }
 .coin span { font-size: 0.5rem; color: var(--gold); }
 .coin input { padding: 0; text-align: center; font-size: 0.8rem; border: none; background: transparent; width: 100%; }
+.equip-text { flex: 1; }
 .equip-text textarea { height: 300px; border-radius: 8px; }
 
 /* --- COLUNA DIREITA --- */
@@ -135,9 +253,646 @@ label { display: block; text-transform: uppercase; font-size: 0.65rem; color: va
 .lvl-header { background: #333; color: var(--gold); padding: 5px; display: flex; justify-content: space-between; align-items: center; font-family: 'Cinzel'; }
 .slots input { width: 35px; text-align: center; border: 1px solid #555; border-radius: 4px; }
 
-/* CORREÇÃO DAS MAGIAS */
 .spell-row { display: flex; align-items: center; border-bottom: 1px solid #333; padding: 4px; }
-/* Checkbox com tamanho fixo */
 .spell-row input[type="checkbox"] { width: auto; margin-right: 10px; accent-color: var(--gold); cursor: pointer; flex-shrink: 0; }
-/* Texto da magia ocupa o resto, largura auto para não quebrar */
 .spell-row input[type="text"] { font-size: 0.9rem; padding: 2px; flex-grow: 1; width: auto; }
+
+/* ========================================
+   LOGIN PAGE
+   ======================================== */
+.login-body {
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #0d0d14 0%, #1a1a2e 50%, #16213e 100%);
+}
+
+.login-container {
+    width: 100%;
+    max-width: 420px;
+    padding: 20px;
+    text-align: center;
+}
+
+.login-card {
+    background: var(--panel-bg);
+    border: 2px solid var(--gold);
+    border-radius: 20px;
+    padding: 40px 30px;
+    box-shadow: 0 0 40px rgba(197, 160, 89, 0.1), 0 20px 60px rgba(0,0,0,0.5);
+    animation: fadeInUp 0.6s ease;
+}
+
+.login-icon {
+    font-size: 3rem;
+    color: var(--gold);
+    margin-bottom: 10px;
+    text-shadow: 0 0 20px var(--gold-glow);
+}
+
+.login-title {
+    font-family: 'Cinzel', serif;
+    font-size: 2rem;
+    color: var(--gold);
+    margin-bottom: 5px;
+}
+
+.login-subtitle {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 30px;
+}
+
+.login-footer {
+    color: var(--text-muted);
+    font-size: 0.7rem;
+    margin-top: 20px;
+    opacity: 0.5;
+}
+
+/* ========================================
+   FORM ELEMENTS (shared login + fichas)
+   ======================================== */
+.form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.form-group label {
+    text-align: left;
+    font-size: 0.75rem;
+    margin-bottom: 8px;
+    color: var(--text-muted);
+}
+
+.form-group input {
+    padding: 12px 15px;
+    border-radius: 10px;
+    border: 1px solid #444;
+    font-size: 1rem;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.form-group input:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 10px var(--gold-glow);
+}
+
+.hint {
+    display: block;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-top: 5px;
+    font-style: italic;
+}
+
+.error-msg {
+    background: rgba(231, 76, 60, 0.15);
+    border: 1px solid var(--error);
+    color: var(--error);
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.btn-login {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, var(--gold), #a0853e);
+    border: none;
+    border-radius: 10px;
+    color: #121212;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    letter-spacing: 1px;
+}
+.btn-login:hover {
+    background: linear-gradient(135deg, #e0c070, var(--gold));
+    box-shadow: 0 0 20px var(--gold-glow);
+    transform: translateY(-1px);
+}
+.btn-login:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+/* ========================================
+   FICHAS LIST PAGE
+   ======================================== */
+.fichas-body {
+    padding: 0;
+    padding-top: 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.top-nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 200;
+    background: linear-gradient(135deg, #1a1a22, #252530);
+    border-bottom: 2px solid var(--gold);
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+
+.nav-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.nav-icon {
+    font-size: 1.3rem;
+    color: var(--gold);
+}
+
+.nav-title {
+    font-family: 'Cinzel', serif;
+    font-size: 1.1rem;
+    color: var(--gold);
+}
+
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.nav-user {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.btn-logout {
+    background: rgba(231, 76, 60, 0.2);
+    border: 1px solid var(--error);
+    color: var(--error);
+    padding: 6px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: bold;
+    transition: all 0.3s;
+}
+.btn-logout:hover { background: rgba(231, 76, 60, 0.4); }
+
+.fichas-container {
+    width: 100%;
+    max-width: 700px;
+    padding: 30px 20px;
+}
+
+.fichas-title {
+    font-family: 'Cinzel', serif;
+    font-size: 1.5rem;
+    color: var(--gold);
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+.sheets-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.sheet-card {
+    background: var(--panel-bg);
+    border: 1px solid #444;
+    border-radius: 14px;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.sheet-card:hover {
+    border-color: var(--gold);
+    box-shadow: 0 0 15px var(--gold-glow);
+    transform: translateX(3px);
+}
+
+.card-icon {
+    font-size: 1.5rem;
+    color: var(--gold);
+    width: 40px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.card-info {
+    flex: 1;
+    min-width: 0;
+}
+.card-info h3 {
+    font-family: 'Cinzel', serif;
+    font-size: 1.05rem;
+    color: var(--text);
+    margin-bottom: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.card-date {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+
+.card-arrow {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    flex-shrink: 0;
+    transition: color 0.3s;
+}
+.sheet-card:hover .card-arrow { color: var(--gold); }
+
+.btn-card-delete {
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--text-muted);
+    padding: 6px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.3s;
+    flex-shrink: 0;
+}
+.btn-card-delete:hover {
+    color: var(--error);
+    border-color: var(--error);
+    background: rgba(231, 76, 60, 0.1);
+}
+
+.btn-delete {
+    flex: 1;
+    padding: 12px;
+    background: linear-gradient(135deg, var(--error), #c0392b);
+    border: none;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.btn-delete:hover {
+    background: linear-gradient(135deg, #e74c3c, #e74c3c);
+    box-shadow: 0 0 15px rgba(231, 76, 60, 0.3);
+}
+.btn-delete:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.loading-indicator {
+    text-align: center;
+    padding: 30px;
+    color: var(--text-muted);
+    font-size: 1rem;
+}
+
+.empty-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+    color: var(--text-muted);
+    text-align: center;
+    gap: 8px;
+}
+.empty-message i { font-size: 2.5rem; opacity: 0.5; margin-bottom: 10px; }
+
+.btn-new-sheet {
+    display: block;
+    width: 100%;
+    margin-top: 20px;
+    padding: 16px;
+    background: linear-gradient(135deg, var(--gold), #a0853e);
+    border: none;
+    border-radius: 14px;
+    color: #121212;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    letter-spacing: 0.5px;
+}
+.btn-new-sheet:hover {
+    background: linear-gradient(135deg, #e0c070, var(--gold));
+    box-shadow: 0 0 25px var(--gold-glow);
+    transform: translateY(-2px);
+}
+
+/* ========================================
+   MODAL
+   ======================================== */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 500;
+    padding: 20px;
+    animation: fadeIn 0.2s ease;
+}
+
+.modal-card {
+    background: var(--panel-bg);
+    border: 2px solid var(--gold);
+    border-radius: 16px;
+    padding: 30px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 0 40px rgba(197, 160, 89, 0.1), 0 20px 60px rgba(0,0,0,0.6);
+    animation: fadeInUp 0.3s ease;
+}
+
+.modal-card h2 {
+    font-family: 'Cinzel', serif;
+    color: var(--gold);
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 1.3rem;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.btn-cancel {
+    flex: 1;
+    padding: 12px;
+    background: transparent;
+    border: 1px solid #555;
+    color: var(--text-muted);
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.3s;
+}
+.btn-cancel:hover { border-color: var(--text); color: var(--text); }
+
+.btn-create {
+    flex: 1;
+    padding: 12px;
+    background: linear-gradient(135deg, var(--gold), #a0853e);
+    border: none;
+    border-radius: 10px;
+    color: #121212;
+    font-size: 0.9rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.btn-create:hover {
+    background: linear-gradient(135deg, #e0c070, var(--gold));
+    box-shadow: 0 0 15px var(--gold-glow);
+}
+.btn-create:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* ========================================
+   TOAST NOTIFICATION
+   ======================================== */
+.toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    z-index: 1000;
+    animation: fadeInUp 0.3s ease;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+}
+.toast-success { background: var(--success); color: #fff; }
+.toast-error { background: var(--error); color: #fff; }
+.toast-info { background: var(--info); color: #fff; }
+
+/* ========================================
+   ANIMATIONS
+   ======================================== */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* ========================================
+   PAGE HEADER 
+   ======================================== */
+.page-header h2 {
+    font-family: 'Cinzel', serif;
+    color: var(--gold);
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.box-label {
+    display: block;
+    text-align: center;
+    text-transform: uppercase;
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    font-weight: bold;
+    margin-top: 5px;
+    letter-spacing: 0.5px;
+}
+
+.center-label {
+    text-align: center;
+}
+
+.box-footer {
+    text-align: center;
+    display: block;
+    margin-top: auto;
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+
+/* Tablet (≤ 900px) - ONLY in edit mode */
+@media (max-width: 900px) {
+    .edit-mode .main-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    .edit-mode .col-right {
+        grid-column: 1 / -1;
+    }
+    .edit-mode .spells-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    .edit-mode .bio-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Mobile (≤ 768px) */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+        padding-top: 65px;
+    }
+
+    .sheet-page {
+        padding: 15px;
+    }
+
+    /* Sheet layout changes ONLY in edit mode */
+    .edit-mode .header-section {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .edit-mode .header-name { width: 100%; }
+    .edit-mode .header-meta { width: 100%; }
+    .edit-mode .meta-row { flex-direction: column; gap: 8px; }
+
+    .edit-mode .main-grid {
+        grid-template-columns: 1fr;
+    }
+    .edit-mode .col-right {
+        grid-column: auto;
+    }
+
+    .edit-mode .page2-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .edit-mode .spells-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .edit-mode .spell-header {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .edit-mode .bio-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .edit-mode .dice-death-row {
+        flex-direction: column;
+    }
+
+    .edit-mode .combat-header {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .sheet-nav {
+        padding: 10px 12px;
+    }
+    .nav-sheet-title {
+        font-size: 0.9rem;
+    }
+    .nav-back {
+        font-size: 0.8rem;
+    }
+
+    .fichas-title {
+        font-size: 1.2rem;
+    }
+
+    .edit-mode .features-box textarea {
+        min-height: 250px;
+    }
+
+    .edit-mode #attacks_text {
+        height: 150px;
+    }
+    .edit-mode .equip-text textarea {
+        height: 200px;
+    }
+}
+
+/* Small Mobile (≤ 480px) */
+@media (max-width: 480px) {
+    body {
+        padding: 5px;
+        padding-top: 60px;
+    }
+
+    .edit-mode .sheet-page {
+        padding: 10px;
+        border-radius: 8px;
+    }
+
+    .edit-mode .header-name input {
+        font-size: 1.2rem;
+        height: 40px;
+    }
+
+    .edit-mode .mod-big {
+        font-size: 1.4rem;
+        height: 40px;
+    }
+
+    .edit-mode .shield-box input {
+        font-size: 1.2rem;
+        padding: 8px;
+    }
+
+    .edit-mode .big-hp-input {
+        font-size: 1.5rem;
+        height: 50px;
+    }
+
+    .login-card {
+        padding: 30px 20px;
+    }
+
+    .login-title {
+        font-size: 1.6rem;
+    }
+
+    .login-icon {
+        font-size: 2.5rem;
+    }
+
+    .btn-edit {
+        padding: 5px 10px;
+        font-size: 0.7rem;
+    }
+
+    .nav-sheet-title {
+        font-size: 0.8rem;
+    }
+
+    .sheet-card {
+        padding: 14px 15px;
+    }
+
+    .card-info h3 {
+        font-size: 0.95rem;
+    }
+
+    .edit-mode .bio-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* View mode on mobile: allow horizontal scroll for full sheet */
+@media (max-width: 768px) {
+    .sheet-container:not(.edit-mode) {
+        min-width: 1100px;
+    }
+}

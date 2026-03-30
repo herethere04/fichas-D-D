@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D&D 5e - Fichas de Personagem</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="fichas-body">
+    <!-- Top Navbar -->
+    <nav class="top-nav">
+        <div class="nav-left">
+            <i class="fa-solid fa-dragon nav-icon"></i>
+            <span class="nav-title">D&D 5e Fichas</span>
+        </div>
+        <div class="nav-right">
+            <span id="nav-user" class="nav-user"></span>
+            <button onclick="api.logout()" class="btn-logout">
+                <i class="fa-solid fa-right-from-bracket"></i> Sair
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="fichas-container">
+        <h1 class="fichas-title"><i class="fa-solid fa-scroll"></i> Fichas de Personagem</h1>
+
+        <div id="sheets-list" class="sheets-grid">
+            <!-- Cards will be inserted here -->
+        </div>
+
+        <div id="loading" class="loading-indicator">
+            <i class="fa-solid fa-spinner fa-spin"></i> Carregando fichas...
+        </div>
+
+        <div id="empty-msg" class="empty-message" style="display:none;">
+            <i class="fa-solid fa-ghost"></i>
+            <p>Nenhuma ficha criada ainda.</p>
+            <p>Clique no botão abaixo para criar sua primeira ficha!</p>
+        </div>
+
+        <!-- Add New Sheet Button -->
+        <button id="btn-new-sheet" class="btn-new-sheet" onclick="openNewSheetModal()">
+            <i class="fa-solid fa-plus"></i> Nova Ficha
+        </button>
+    </div>
+
+    <!-- Modal: New Sheet -->
+    <div id="modal-overlay" class="modal-overlay" style="display:none;">
+        <div class="modal-card">
+            <h2><i class="fa-solid fa-hat-wizard"></i> Nova Ficha</h2>
+            <form id="new-sheet-form">
+                <div class="form-group">
+                    <label for="char-name"><i class="fa-solid fa-user-pen"></i> Nome do Personagem</label>
+                    <input type="text" id="char-name" placeholder="Ex: Gandalf, Elminster..." required maxlength="100">
+                </div>
+                <div class="form-group">
+                    <label for="char-pass"><i class="fa-solid fa-key"></i> Senha de Edição</label>
+                    <input type="password" id="char-pass" placeholder="Mínimo 3 caracteres" required minlength="3" maxlength="50" autocomplete="off">
+                    <small class="hint">Quem tiver esta senha poderá editar a ficha.</small>
+                </div>
+                <div id="modal-error" class="error-msg" style="display:none;"></div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeNewSheetModal()">Cancelar</button>
+                    <button type="submit" id="btn-create" class="btn-create">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Criar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Delete Sheet -->
+    <div id="delete-modal" class="modal-overlay" style="display:none;">
+        <div class="modal-card">
+            <h2><i class="fa-solid fa-trash" style="color:var(--error)"></i> Excluir Ficha</h2>
+            <p id="delete-char-name" style="text-align:center; color:var(--text-muted); margin-bottom:15px;"></p>
+            <form id="delete-form">
+                <div class="form-group">
+                    <label for="delete-pass"><i class="fa-solid fa-key"></i> Senha de Edição</label>
+                    <input type="password" id="delete-pass" placeholder="Digite a senha da ficha" required autocomplete="off">
+                    <small class="hint">A senha é necessária para confirmar a exclusão.</small>
+                </div>
+                <div id="delete-error" class="error-msg" style="display:none;"></div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeDeleteModal()">Cancelar</button>
+                    <button type="submit" id="btn-delete" class="btn-delete">
+                        <i class="fa-solid fa-trash"></i> Excluir
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="api.js"></script>
+    <script>
+        if (!api.requireAuth()) { /* redirects */ }
+
+        document.getElementById('nav-user').textContent = 'admin';
+
+        async function loadSheets() {
+            const list = document.getElementById('sheets-list');
+            const loading = document.getElementById('loading');
+            const emptyMsg = document.getElementById('empty-msg');
+
+            try {
+                const sheets = await api.getSheets();
+                loading.style.display = 'none';
+
+                if (!sheets || sheets.length === 0) {
+                    emptyMsg.style.display = 'flex';
+                    return;
+                }
+
+                emptyMsg.style.display = 'none';
+                list.innerHTML = sheets.map(s => `
+                    <div class="sheet-card" onclick="window.location.href='index.html?id=${s.id}'">
+                        <div class="card-icon"><i class="fa-solid fa-scroll"></i></div>
+                        <div class="card-info">
+                            <h3>${escapeHtml(s.characterName)}</h3>
+                            <span class="card-date">Atualizado: ${formatDate(s.updatedAt)}</span>
+                        </div>
+                        <button class="btn-card-delete" onclick="event.stopPropagation(); openDeleteModal(${s.id}, '${escapeHtml(s.characterName)}')" title="Excluir ficha">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                        <div class="card-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+                    </div>
+                `).join('');
+            } catch (err) {
+                loading.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Erro: ${err.message}`;
+            }
+        }
+
+        function openNewSheetModal() {
+            document.getElementById('modal-overlay').style.display = 'flex';
+            document.getElementById('char-name').focus();
+        }
+
+        function closeNewSheetModal() {
+            document.getElementById('modal-overlay').style.display = 'none';
+            document.getElementById('new-sheet-form').reset();
+            document.getElementById('modal-error').style.display = 'none';
+        }
+
+        document.getElementById('new-sheet-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-create');
+            const errorDiv = document.getElementById('modal-error');
+            const name = document.getElementById('char-name').value.trim();
+            const pass = document.getElementById('char-pass').value;
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Criando...';
+            errorDiv.style.display = 'none';
+
+            try {
+                const sheet = await api.createSheet(name, pass);
+                closeNewSheetModal();
+                // Go directly to edit the new sheet
+                window.location.href = `index.html?id=${sheet.id}&edit=1`;
+            } catch (err) {
+                errorDiv.textContent = err.message;
+                errorDiv.style.display = 'block';
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> Criar';
+            }
+        });
+
+        // Close modal on overlay click
+        document.getElementById('modal-overlay').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) closeNewSheetModal();
+        });
+        document.getElementById('delete-modal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) closeDeleteModal();
+        });
+
+        // === DELETE SHEET ===
+        let deleteSheetId = null;
+
+        function openDeleteModal(id, name) {
+            deleteSheetId = id;
+            document.getElementById('delete-char-name').textContent = `Personagem: ${name}`;
+            document.getElementById('delete-modal').style.display = 'flex';
+            document.getElementById('delete-pass').value = '';
+            document.getElementById('delete-error').style.display = 'none';
+            document.getElementById('delete-pass').focus();
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('delete-modal').style.display = 'none';
+            deleteSheetId = null;
+        }
+
+        document.getElementById('delete-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-delete');
+            const errorDiv = document.getElementById('delete-error');
+            const pass = document.getElementById('delete-pass').value;
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Excluindo...';
+            errorDiv.style.display = 'none';
+
+            try {
+                await api.deleteSheet(deleteSheetId, pass);
+                closeDeleteModal();
+                loadSheets();
+            } catch (err) {
+                errorDiv.textContent = err.message;
+                errorDiv.style.display = 'block';
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-trash"></i> Excluir';
+            }
+        });
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function formatDate(dateStr) {
+            const d = new Date(dateStr);
+            return d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        loadSheets();
+    </script>
+</body>
+</html>

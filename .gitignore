@@ -1,0 +1,16 @@
+[Bb]in/
+[Oo]bj/
+[Oo]ut/
+.gemini/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.log
+*.txt
+*.webp
+*.png
+node_modules/
+dist/
+.env

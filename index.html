@@ -10,10 +10,36 @@
 </head>
 <body>
 
-    <div class="controls">
-        <button onclick="saveSheet()" class="btn-save"><i class="fa-solid fa-floppy-disk"></i> SAVE JSON</button>
-        <button onclick="document.getElementById('file-input').click()" class="btn-load"><i class="fa-solid fa-upload"></i> LOAD</button>
-        <input type="file" id="file-input" accept=".json" onchange="loadFromFile(this)" hidden>
+    <!-- Top Navigation Bar -->
+    <nav class="sheet-nav">
+        <a href="fichas.html" class="nav-back"><i class="fa-solid fa-arrow-left"></i> Voltar</a>
+        <span id="sheet-title" class="nav-sheet-title">Carregando...</span>
+        <div class="nav-actions">
+            <button id="btn-edit-toggle" class="btn-edit" onclick="toggleEditMode()" style="display:none;">
+                <i class="fa-solid fa-pen"></i> Editar
+            </button>
+            <button id="btn-save" class="btn-save" onclick="saveSheetToAPI()" style="display:none;">
+                <i class="fa-solid fa-floppy-disk"></i> Salvar
+            </button>
+        </div>
+    </nav>
+
+    <!-- Password Modal -->
+    <div id="password-modal" class="modal-overlay" style="display:none;">
+        <div class="modal-card">
+            <h2><i class="fa-solid fa-lock"></i> Senha de Edição</h2>
+            <form id="password-form">
+                <div class="form-group">
+                    <label for="edit-pass">Digite a senha para editar esta ficha:</label>
+                    <input type="password" id="edit-pass" placeholder="Senha de edição" required autocomplete="off">
+                </div>
+                <div id="pass-error" class="error-msg" style="display:none;"></div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closePasswordModal()">Cancelar</button>
+                    <button type="submit" class="btn-create"><i class="fa-solid fa-unlock"></i> Desbloquear</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <div id="sheet" class="sheet-container">
@@ -22,19 +48,19 @@
             
             <header class="header-section">
                 <div class="header-name">
-                    <input type="text" id="charName" placeholder="Character Name">
+                    <input type="text" id="charName" placeholder="Character Name" disabled>
                     <label>Character Name</label>
                 </div>
                 <div class="header-meta">
                     <div class="meta-row">
-                        <div class="meta-box"><input type="text" id="classLevel"><label>Class & Level</label></div>
-                        <div class="meta-box"><input type="text" id="background"><label>Background</label></div>
-                        <div class="meta-box"><input type="text" id="playerName"><label>Player Name</label></div>
+                        <div class="meta-box"><input type="text" id="classLevel" disabled><label>Class & Level</label></div>
+                        <div class="meta-box"><input type="text" id="background" disabled><label>Background</label></div>
+                        <div class="meta-box"><input type="text" id="playerName" disabled><label>Player Name</label></div>
                     </div>
                     <div class="meta-row">
-                        <div class="meta-box"><input type="text" id="race"><label>Race</label></div>
-                        <div class="meta-box"><input type="text" id="alignment"><label>Alignment</label></div>
-                        <div class="meta-box"><input type="number" id="xp"><label>Experience Points</label></div>
+                        <div class="meta-box"><input type="text" id="race" disabled><label>Race</label></div>
+                        <div class="meta-box"><input type="text" id="alignment" disabled><label>Alignment</label></div>
+                        <div class="meta-box"><input type="number" id="xp" disabled><label>Experience Points</label></div>
                     </div>
                 </div>
             </header>
@@ -42,18 +68,18 @@
             <main class="main-grid">
                 <div class="col-left">
                     <div class="attributes-stack">
-                        <div class="attr-box"><label>Strength</label><input type="number" id="str_mod" class="mod-big"><input type="number" id="str_score" class="score-small"></div>
-                        <div class="attr-box"><label>Dexterity</label><input type="number" id="dex_mod" class="mod-big"><input type="number" id="dex_score" class="score-small"></div>
-                        <div class="attr-box"><label>Constitution</label><input type="number" id="con_mod" class="mod-big"><input type="number" id="con_score" class="score-small"></div>
-                        <div class="attr-box"><label>Intelligence</label><input type="number" id="int_mod" class="mod-big"><input type="number" id="int_score" class="score-small"></div>
-                        <div class="attr-box"><label>Wisdom</label><input type="number" id="wis_mod" class="mod-big"><input type="number" id="wis_score" class="score-small"></div>
-                        <div class="attr-box"><label>Charisma</label><input type="number" id="cha_mod" class="mod-big"><input type="number" id="cha_score" class="score-small"></div>
+                        <div class="attr-box"><label>Strength</label><input type="number" id="str_mod" class="mod-big" disabled><input type="number" id="str_score" class="score-small" disabled></div>
+                        <div class="attr-box"><label>Dexterity</label><input type="number" id="dex_mod" class="mod-big" disabled><input type="number" id="dex_score" class="score-small" disabled></div>
+                        <div class="attr-box"><label>Constitution</label><input type="number" id="con_mod" class="mod-big" disabled><input type="number" id="con_score" class="score-small" disabled></div>
+                        <div class="attr-box"><label>Intelligence</label><input type="number" id="int_mod" class="mod-big" disabled><input type="number" id="int_score" class="score-small" disabled></div>
+                        <div class="attr-box"><label>Wisdom</label><input type="number" id="wis_mod" class="mod-big" disabled><input type="number" id="wis_score" class="score-small" disabled></div>
+                        <div class="attr-box"><label>Charisma</label><input type="number" id="cha_mod" class="mod-big" disabled><input type="number" id="cha_score" class="score-small" disabled></div>
                     </div>
 
                     <div class="skills-block">
                         <div class="insp-prof">
-                            <div class="mini-box"><input type="number" id="inspiration"><label>Inspiration</label></div>
-                            <div class="mini-box"><input type="number" id="profBonus"><label>Proficiency Bonus</label></div>
+                            <div class="mini-box"><input type="number" id="inspiration" disabled><label>Inspiration</label></div>
+                            <div class="mini-box"><input type="number" id="profBonus" disabled><label>Proficiency Bonus</label></div>
                         </div>
                         <div class="list-container">
                             <div class="list-box"><div id="saves-list"></div><label class="box-label">Saving Throws</label></div>
@@ -62,43 +88,43 @@
                     </div>
 
                     <div class="passive-perc">
-                        <input type="number" id="passiveWis">
+                        <input type="number" id="passiveWis" disabled>
                         <label>Passive Wisdom (Perception)</label>
                     </div>
 
                     <div class="prof-lang-box">
-                        <textarea id="proficienciesLanguages"></textarea>
+                        <textarea id="proficienciesLanguages" disabled></textarea>
                         <label class="box-label">Other Proficiencies & Languages</label>
                     </div>
                 </div>
 
                 <div class="col-center">
                     <div class="combat-header">
-                        <div class="shield-box"><input type="number" id="ac"><label>Armor Class</label></div>
-                        <div class="shield-box"><input type="number" id="initiative"><label>Initiative</label></div>
-                        <div class="shield-box"><input type="text" id="speed"><label>Speed</label></div>
+                        <div class="shield-box"><input type="number" id="ac" disabled><label>Armor Class</label></div>
+                        <div class="shield-box"><input type="number" id="initiative" disabled><label>Initiative</label></div>
+                        <div class="shield-box"><input type="text" id="speed" disabled><label>Speed</label></div>
                     </div>
 
                     <div class="hp-block">
-                        <div class="hp-top"><label>Hit Point Maximum</label><input type="number" id="hpMax" class="line-input"></div>
-                        <textarea id="hpCurrent" class="big-hp-input"></textarea>
+                        <div class="hp-top"><label>Hit Point Maximum</label><input type="number" id="hpMax" class="line-input" disabled></div>
+                        <textarea id="hpCurrent" class="big-hp-input" disabled></textarea>
                         <label class="center-label">Current Hit Points</label>
                     </div>
 
                     <div class="hp-temp-block">
-                        <textarea id="hpTemp" class="temp-hp-input"></textarea>
+                        <textarea id="hpTemp" class="temp-hp-input" disabled></textarea>
                         <label class="center-label">Temporary Hit Points</label>
                     </div>
 
                     <div class="dice-death-row">
                         <div class="hit-dice-box">
-                            <div class="hd-top"><label>Total</label><input type="text" id="hdTotal" class="tiny-input"></div>
-                            <input type="text" id="hdCurrent" class="big-dice-input">
+                            <div class="hd-top"><label>Total</label><input type="text" id="hdTotal" class="tiny-input" disabled></div>
+                            <input type="text" id="hdCurrent" class="big-dice-input" disabled>
                             <label class="box-footer">Hit Dice</label>
                         </div>
                         <div class="death-saves-box">
-                            <div class="ds-line"><label>Successes</label><input type="checkbox" id="ds_s1"><input type="checkbox" id="ds_s2"><input type="checkbox" id="ds_s3"></div>
-                            <div class="ds-line"><label>Failures</label><input type="checkbox" id="ds_f1"><input type="checkbox" id="ds_f2"><input type="checkbox" id="ds_f3"></div>
+                            <div class="ds-line"><label>Successes</label><input type="checkbox" id="ds_s1" disabled><input type="checkbox" id="ds_s2" disabled><input type="checkbox" id="ds_s3" disabled></div>
+                            <div class="ds-line"><label>Failures</label><input type="checkbox" id="ds_f1" disabled><input type="checkbox" id="ds_f2" disabled><input type="checkbox" id="ds_f3" disabled></div>
                             <label class="box-footer">Death Saves</label>
                         </div>
                     </div>
@@ -110,34 +136,34 @@
                             <span style="flex:2">DAMAGE/TYPE</span>
                         </div>
                         <div class="attack-row">
-                            <input type="text" id="atk_name_1" class="atk-input" placeholder="Weapon">
-                            <input type="text" id="atk_bonus_1" class="atk-input-center" placeholder="+0">
-                            <input type="text" id="atk_dmg_1" class="atk-input" placeholder="Dmg/Type">
+                            <input type="text" id="atk_name_1" class="atk-input" placeholder="Weapon" disabled>
+                            <input type="text" id="atk_bonus_1" class="atk-input-center" placeholder="+0" disabled>
+                            <input type="text" id="atk_dmg_1" class="atk-input" placeholder="Dmg/Type" disabled>
                         </div>
                         <div class="attack-row">
-                            <input type="text" id="atk_name_2" class="atk-input">
-                            <input type="text" id="atk_bonus_2" class="atk-input-center">
-                            <input type="text" id="atk_dmg_2" class="atk-input">
+                            <input type="text" id="atk_name_2" class="atk-input" disabled>
+                            <input type="text" id="atk_bonus_2" class="atk-input-center" disabled>
+                            <input type="text" id="atk_dmg_2" class="atk-input" disabled>
                         </div>
                         <div class="attack-row">
-                            <input type="text" id="atk_name_3" class="atk-input">
-                            <input type="text" id="atk_bonus_3" class="atk-input-center">
-                            <input type="text" id="atk_dmg_3" class="atk-input">
+                            <input type="text" id="atk_name_3" class="atk-input" disabled>
+                            <input type="text" id="atk_bonus_3" class="atk-input-center" disabled>
+                            <input type="text" id="atk_dmg_3" class="atk-input" disabled>
                         </div>
-                        <textarea id="attacks_text"></textarea>
+                        <textarea id="attacks_text" disabled></textarea>
                         <label class="box-label">Attacks & Spellcasting</label>
                     </div>
 
                     <div class="equipment-box">
                         <div class="currency-col">
-                            <div class="coin"><span>CP</span><input type="number" id="cp"></div>
-                            <div class="coin"><span>SP</span><input type="number" id="sp"></div>
-                            <div class="coin"><span>EP</span><input type="number" id="ep"></div>
-                            <div class="coin"><span>GP</span><input type="number" id="gp"></div>
-                            <div class="coin"><span>PP</span><input type="number" id="pp"></div>
+                            <div class="coin"><span>CP</span><input type="number" id="cp" disabled></div>
+                            <div class="coin"><span>SP</span><input type="number" id="sp" disabled></div>
+                            <div class="coin"><span>EP</span><input type="number" id="ep" disabled></div>
+                            <div class="coin"><span>GP</span><input type="number" id="gp" disabled></div>
+                            <div class="coin"><span>PP</span><input type="number" id="pp" disabled></div>
                         </div>
                         <div class="equip-text">
-                            <textarea id="equipment"></textarea>
+                            <textarea id="equipment" disabled></textarea>
                             <label class="box-label">Equipment</label>
                         </div>
                     </div>
@@ -145,13 +171,13 @@
 
                 <div class="col-right">
                     <div class="traits-container">
-                        <div class="trait-small"><textarea id="personality"></textarea><label>Personality Traits</label></div>
-                        <div class="trait-small"><textarea id="ideals"></textarea><label>Ideals</label></div>
-                        <div class="trait-small"><textarea id="bonds"></textarea><label>Bonds</label></div>
-                        <div class="trait-small"><textarea id="flaws"></textarea><label>Flaws</label></div>
+                        <div class="trait-small"><textarea id="personality" disabled></textarea><label>Personality Traits</label></div>
+                        <div class="trait-small"><textarea id="ideals" disabled></textarea><label>Ideals</label></div>
+                        <div class="trait-small"><textarea id="bonds" disabled></textarea><label>Bonds</label></div>
+                        <div class="trait-small"><textarea id="flaws" disabled></textarea><label>Flaws</label></div>
                     </div>
                     <div class="features-box">
-                        <textarea id="features"></textarea>
+                        <textarea id="features" disabled></textarea>
                         <label class="box-label">Features & Traits</label>
                     </div>
                 </div>
@@ -161,31 +187,31 @@
         <section class="sheet-page" id="page-2">
             <header class="page-header"><h2>Character Appearance & Backstory</h2></header>
             <div class="bio-grid">
-                <div class="bio-item"><input type="text" id="age"><label>Age</label></div>
-                <div class="bio-item"><input type="text" id="height"><label>Height</label></div>
-                <div class="bio-item"><input type="text" id="weight"><label>Weight</label></div>
-                <div class="bio-item"><input type="text" id="eyes"><label>Eyes</label></div>
-                <div class="bio-item"><input type="text" id="skin"><label>Skin</label></div>
-                <div class="bio-item"><input type="text" id="hair"><label>Hair</label></div>
+                <div class="bio-item"><input type="text" id="age" disabled><label>Age</label></div>
+                <div class="bio-item"><input type="text" id="height" disabled><label>Height</label></div>
+                <div class="bio-item"><input type="text" id="weight" disabled><label>Weight</label></div>
+                <div class="bio-item"><input type="text" id="eyes" disabled><label>Eyes</label></div>
+                <div class="bio-item"><input type="text" id="skin" disabled><label>Skin</label></div>
+                <div class="bio-item"><input type="text" id="hair" disabled><label>Hair</label></div>
             </div>
             <div class="page2-layout">
                 <div class="col-left-p2">
                     <div class="img-placeholder"><label>Character Appearance</label></div>
-                    <div class="backstory-box"><textarea id="backstory_text"></textarea><label class="box-label">Character Backstory</label></div>
+                    <div class="backstory-box"><textarea id="backstory_text" disabled></textarea><label class="box-label">Character Backstory</label></div>
                 </div>
                 <div class="col-right-p2">
-                    <div class="allies-box"><textarea id="allies_text"></textarea><label class="box-label">Allies & Organizations</label></div>
-                    <div class="treasure-box"><textarea id="treasure_text"></textarea><label class="box-label">Treasure</label></div>
+                    <div class="allies-box"><textarea id="allies_text" disabled></textarea><label class="box-label">Allies & Organizations</label></div>
+                    <div class="treasure-box"><textarea id="treasure_text" disabled></textarea><label class="box-label">Treasure</label></div>
                 </div>
             </div>
         </section>
 
         <section class="sheet-page" id="page-3">
             <header class="spell-header">
-                <div class="spell-meta"><input type="text" id="spell_class"><label>Spellcasting Class</label></div>
-                <div class="spell-meta"><input type="text" id="spell_ability"><label>Spellcasting Ability</label></div>
-                <div class="spell-meta"><input type="number" id="spell_save_dc"><label>Spell Save DC</label></div>
-                <div class="spell-meta"><input type="number" id="spell_attack_bonus"><label>Spell Attack Bonus</label></div>
+                <div class="spell-meta"><input type="text" id="spell_class" disabled><label>Spellcasting Class</label></div>
+                <div class="spell-meta"><input type="text" id="spell_ability" disabled><label>Spellcasting Ability</label></div>
+                <div class="spell-meta"><input type="number" id="spell_save_dc" disabled><label>Spell Save DC</label></div>
+                <div class="spell-meta"><input type="number" id="spell_attack_bonus" disabled><label>Spell Attack Bonus</label></div>
             </header>
             <div class="spells-grid">
                 <div class="spell-level-box">
@@ -193,21 +219,26 @@
                     <div id="spells-0"></div>
                 </div>
                 <div class="spell-level-box">
-                    <div class="lvl-header">1 <span class="slots">Slots Total <input type="number" id="slots_total_1"> Expended <input type="number" id="slots_exp_1"></span></div>
+                    <div class="lvl-header">1 <span class="slots">Slots Total <input type="number" id="slots_total_1" disabled> Expended <input type="number" id="slots_exp_1" disabled></span></div>
                     <div id="spells-1"></div>
                 </div>
                 <div class="spell-level-box">
-                    <div class="lvl-header">2 <span class="slots">Slots Total <input type="number" id="slots_total_2"> Expended <input type="number" id="slots_exp_2"></span></div>
+                    <div class="lvl-header">2 <span class="slots">Slots Total <input type="number" id="slots_total_2" disabled> Expended <input type="number" id="slots_exp_2" disabled></span></div>
                     <div id="spells-2"></div>
                 </div>
                 <div class="spell-level-box">
-                    <div class="lvl-header">3 <span class="slots">Slots Total <input type="number" id="slots_total_3"> Expended <input type="number" id="slots_exp_3"></span></div>
+                    <div class="lvl-header">3 <span class="slots">Slots Total <input type="number" id="slots_total_3" disabled> Expended <input type="number" id="slots_exp_3" disabled></span></div>
                     <div id="spells-3"></div>
                 </div>
             </div>
         </section>
 
     </div>
+
+    <!-- Toast notification -->
+    <div id="toast" class="toast" style="display:none;"></div>
+
+    <script src="api.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
