@@ -749,6 +749,16 @@ label { display: block; text-transform: uppercase; font-size: 0.65rem; color: va
         font-size: 1.2rem;
     }
 
+    .sheet-nav {
+        padding: 10px 12px;
+    }
+    .nav-sheet-title {
+        font-size: 0.9rem;
+    }
+    .nav-back {
+        font-size: 0.8rem;
+    }
+
     .login-card {
         padding: 30px 20px;
     }
@@ -807,6 +817,15 @@ label { display: block; text-transform: uppercase; font-size: 0.65rem; color: va
 
     .card-info h3 {
         font-size: 0.95rem;
+    }
+
+    .btn-edit {
+        padding: 5px 10px;
+        font-size: 0.7rem;
+    }
+
+    .nav-sheet-title {
+        font-size: 0.8rem;
     }
 }
 
