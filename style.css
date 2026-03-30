@@ -752,6 +752,12 @@ label { display: block; text-transform: uppercase; font-size: 0.65rem; color: va
         padding-top: 65px;
     }
 
+    /* Preserve desktop layout logic in View Mode (allow native pan/zoom) */
+    body:not(.edit-mode) .sheet-page {
+        min-width: 900px;
+        margin: 0 auto;
+    }
+
     .sheet-page {
         padding: 15px;
     }
