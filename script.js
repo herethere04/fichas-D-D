@@ -217,6 +217,41 @@ function showToast(message, type = 'info') {
     }, 3000);
 }
 
-// Drag & Drop (disabled in view mode)
+// Drag & Drop para importar JSON localmente
 document.body.addEventListener('dragover', e => e.preventDefault());
-document.body.addEventListener('drop', e => { e.preventDefault(); });
+document.body.addEventListener('drop', e => { 
+    e.preventDefault(); 
+    
+    if (!editMode) {
+        showToast('Ative a edição primeiro para importar arquivos.', 'warning');
+        return;
+    }
+
+    const file = e.dataTransfer.files[0];
+    if (!file) return;
+
+    if (file.name.endsWith('.json') || file.type === 'application/json') {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            try {
+                const data = JSON.parse(event.target.result);
+                Object.keys(data).forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) {
+                        if (el.type === 'checkbox') {
+                            el.checked = data[id];
+                        } else {
+                            el.value = data[id];
+                        }
+                    }
+                });
+                showToast('Ficha importada com sucesso!', 'success');
+            } catch (err) {
+                showToast('Erro ao ler o arquivo JSON.', 'error');
+            }
+        };
+        reader.readAsText(file);
+    } else {
+        showToast('Solte apenas arquivos .json válidos.', 'error');
+    }
+});
