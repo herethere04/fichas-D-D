@@ -322,8 +322,8 @@ function setupImageUpload() {
             return;
         }
         
-        if (file.size > 100 * 1024) {  // 100KB
-            showToast('A imagem deve ter no máximo 100KB.', 'error');
+        if (file.size > 500 * 1024) {  // 500KB
+            showToast('A imagem deve ter no máximo 500KB.', 'error');
             return;
         }
 

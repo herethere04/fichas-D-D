@@ -13,7 +13,7 @@ O sistema permite que um grupo de RPG crie e gerencie suas fichas em um ambiente
 - **Autenticação Segura (JWT):** Apenas usuários autorizados (o Mestre) podem acessar as fichas.
 - **Fichas Protegidas por Senha:** Cada ficha possui uma "senha de edição". Todos podem visualizar as fichas, mas apenas quem tem a senha pode salvar alterações ou excluir o personagem.
 - **Magias Expandidas (Níveis 1-9):** O sistema agora suporta todos os 9 círculos de magia, organizados em uma grade visual clara e responsiva em 3 colunas.
-- **Aparência do Personagem (Upload de Imagem):** Possibilidade de carregar a foto do personagem via drag-and-drop ou clique (proporção 3:4, limite de 100KB), armazenada de forma eficiente via Base64 diretamente no banco de dados.
+- **Aparência do Personagem (Upload de Imagem):** Possibilidade de carregar a foto do personagem via drag-and-drop ou clique (proporção 3:4, limite de 500KB), armazenada de forma eficiente via Base64 diretamente no banco de dados.
 - **Design Mobile-First:** A interface foi reconstruída com CSS Vanilla moderno para funcionar perfeitamente em telas pequenas. No celular, o layout de visualização permite "scroll" horizontal preservando o visual da ficha de papel.
 - **Clean Architecture:** O backend foi meticulosamente organizado seguindo os princípios de Clean Architecture, separando Core de Domínio, Casos de Uso (Application), Infraestrutura (Banco de Dados e Segurança) e Endpoints (API).
 
