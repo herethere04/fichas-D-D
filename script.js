@@ -119,7 +119,7 @@ async function loadSheetFromAPI(id) {
                 const el = document.getElementById(id);
                 if (el) {
                     if (el.type === 'checkbox') el.checked = data[id];
-                    else el.value = data[id];
+                    else if (el.type !== 'file') el.value = data[id];
                     
                     if (id === 'character_appearance_img' && data[id]) {
                         document.getElementById('character_appearance_img_display').src = data[id];
@@ -141,7 +141,7 @@ async function saveSheetToAPI() {
     const data = {};
     const elements = document.querySelectorAll('#sheet input, #sheet textarea');
     elements.forEach(el => {
-        if (el.id) {
+        if (el.id && el.type !== 'file') {
             if (el.type === 'checkbox') data[el.id] = el.checked;
             else data[el.id] = el.value;
         }
@@ -260,8 +260,15 @@ document.body.addEventListener('drop', e => {
                     if (el) {
                         if (el.type === 'checkbox') {
                             el.checked = data[id];
-                        } else {
+                        } else if (el.type !== 'file') {
                             el.value = data[id];
+                        }
+                        
+                        if (id === 'character_appearance_img' && data[id]) {
+                            document.getElementById('character_appearance_img_display').src = data[id];
+                            document.getElementById('character_appearance_img_display').style.display = 'block';
+                            const label = document.querySelector('#char-img-container .img-label');
+                            if (label) label.style.display = 'none';
                         }
                     }
                 });
