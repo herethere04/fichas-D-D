@@ -196,7 +196,13 @@
             </div>
             <div class="page2-layout">
                 <div class="col-left-p2">
-                    <div class="img-placeholder"><label>Character Appearance</label></div>
+                    <div class="img-placeholder" id="char-img-container" title="Clique ou solte uma imagem (max 100kb)">
+                        <label class="img-label">Character Appearance</label>
+                        <img id="character_appearance_img_display" style="display:none;" />
+                        <span id="img-instruction" style="display:none;"><i class="fa-solid fa-camera"></i> Clique para alterar</span>
+                        <input type="file" id="char-img-upload" accept="image/*" style="display:none;">
+                        <input type="hidden" id="character_appearance_img">
+                    </div>
                     <div class="backstory-box"><textarea id="backstory_text" disabled></textarea><label class="box-label">Character Backstory</label></div>
                 </div>
                 <div class="col-right-p2">
@@ -214,21 +220,53 @@
                 <div class="spell-meta"><input type="number" id="spell_attack_bonus" disabled><label>Spell Attack Bonus</label></div>
             </header>
             <div class="spells-grid">
-                <div class="spell-level-box">
-                    <div class="lvl-header">0 - Cantrips</div>
-                    <div id="spells-0"></div>
+                <div class="spell-col">
+                    <div class="spell-level-box">
+                        <div class="lvl-header">0 - Cantrips</div>
+                        <div id="spells-0"></div>
+                    </div>
+                    <div class="spell-level-box">
+                        <div class="lvl-header">1 <span class="slots">Slots Total <input type="number" id="slots_total_1" disabled> Expended <input type="number" id="slots_exp_1" disabled></span></div>
+                        <div id="spells-1"></div>
+                    </div>
+                    <div class="spell-level-box">
+                        <div class="lvl-header">2 <span class="slots">Slots Total <input type="number" id="slots_total_2" disabled> Expended <input type="number" id="slots_exp_2" disabled></span></div>
+                        <div id="spells-2"></div>
+                    </div>
                 </div>
-                <div class="spell-level-box">
-                    <div class="lvl-header">1 <span class="slots">Slots Total <input type="number" id="slots_total_1" disabled> Expended <input type="number" id="slots_exp_1" disabled></span></div>
-                    <div id="spells-1"></div>
+
+                <div class="spell-col">
+                    <div class="spell-level-box">
+                        <div class="lvl-header">3 <span class="slots">Slots Total <input type="number" id="slots_total_3" disabled> Expended <input type="number" id="slots_exp_3" disabled></span></div>
+                        <div id="spells-3"></div>
+                    </div>
+                    <div class="spell-level-box">
+                        <div class="lvl-header">4 <span class="slots">Slots Total <input type="number" id="slots_total_4" disabled> Expended <input type="number" id="slots_exp_4" disabled></span></div>
+                        <div id="spells-4"></div>
+                    </div>
+                    <div class="spell-level-box">
+                        <div class="lvl-header">5 <span class="slots">Slots Total <input type="number" id="slots_total_5" disabled> Expended <input type="number" id="slots_exp_5" disabled></span></div>
+                        <div id="spells-5"></div>
+                    </div>
                 </div>
-                <div class="spell-level-box">
-                    <div class="lvl-header">2 <span class="slots">Slots Total <input type="number" id="slots_total_2" disabled> Expended <input type="number" id="slots_exp_2" disabled></span></div>
-                    <div id="spells-2"></div>
-                </div>
-                <div class="spell-level-box">
-                    <div class="lvl-header">3 <span class="slots">Slots Total <input type="number" id="slots_total_3" disabled> Expended <input type="number" id="slots_exp_3" disabled></span></div>
-                    <div id="spells-3"></div>
+
+                <div class="spell-col">
+                    <div class="spell-level-box">
+                        <div class="lvl-header">6 <span class="slots">Slots Total <input type="number" id="slots_total_6" disabled> Expended <input type="number" id="slots_exp_6" disabled></span></div>
+                        <div id="spells-6"></div>
+                    </div>
+                    <div class="spell-level-box">
+                        <div class="lvl-header">7 <span class="slots">Slots Total <input type="number" id="slots_total_7" disabled> Expended <input type="number" id="slots_exp_7" disabled></span></div>
+                        <div id="spells-7"></div>
+                    </div>
+                    <div class="spell-level-box">
+                        <div class="lvl-header">8 <span class="slots">Slots Total <input type="number" id="slots_total_8" disabled> Expended <input type="number" id="slots_exp_8" disabled></span></div>
+                        <div id="spells-8"></div>
+                    </div>
+                    <div class="spell-level-box">
+                        <div class="lvl-header">9 <span class="slots">Slots Total <input type="number" id="slots_total_9" disabled> Expended <input type="number" id="slots_exp_9" disabled></span></div>
+                        <div id="spells-9"></div>
+                    </div>
                 </div>
             </div>
         </section>

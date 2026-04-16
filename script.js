@@ -6,6 +6,7 @@ let editPassword = null;
 document.addEventListener('DOMContentLoaded', () => {
     generateLists();
     generateSpells();
+    setupImageUpload();
 
     // Get sheet ID from URL
     const params = new URLSearchParams(window.location.search);
@@ -88,7 +89,7 @@ function generateSpells() {
         cantripsDiv.innerHTML += `<div class="spell-row"><input type="text" id="spell_0_${i}" disabled></div>`;
     }
 
-    [1, 2, 3].forEach(lvl => {
+    [1, 2, 3, 4, 5, 6, 7, 8, 9].forEach(lvl => {
         const div = document.getElementById(`spells-${lvl}`);
         if(div) {
             for(let i=0; i<12; i++) {
@@ -119,6 +120,13 @@ async function loadSheetFromAPI(id) {
                 if (el) {
                     if (el.type === 'checkbox') el.checked = data[id];
                     else el.value = data[id];
+                    
+                    if (id === 'character_appearance_img' && data[id]) {
+                        document.getElementById('character_appearance_img_display').src = data[id];
+                        document.getElementById('character_appearance_img_display').style.display = 'block';
+                        const label = document.querySelector('#char-img-container .img-label');
+                        if (label) label.style.display = 'none';
+                    }
                 }
             });
         }
@@ -174,6 +182,12 @@ function enableEditMode() {
     editBtn.innerHTML = '<i class="fa-solid fa-eye"></i> Apenas Visualizar';
     editBtn.classList.add('active');
     document.getElementById('sheet').classList.add('edit-mode');
+    
+    const imgContainer = document.getElementById('char-img-container');
+    if (imgContainer) {
+        imgContainer.classList.add('editable');
+        document.getElementById('img-instruction').style.display = 'block';
+    }
 }
 
 function disableEditMode() {
@@ -187,6 +201,12 @@ function disableEditMode() {
     editBtn.innerHTML = '<i class="fa-solid fa-pen"></i> Editar';
     editBtn.classList.remove('active');
     document.getElementById('sheet').classList.remove('edit-mode');
+
+    const imgContainer = document.getElementById('char-img-container');
+    if (imgContainer) {
+        imgContainer.classList.remove('editable');
+        document.getElementById('img-instruction').style.display = 'none';
+    }
 }
 
 function openPasswordModal() {
@@ -255,3 +275,66 @@ document.body.addEventListener('drop', e => {
         showToast('Solte apenas arquivos .json válidos.', 'error');
     }
 });
+
+// === IMAGE UPLOAD ===
+function setupImageUpload() {
+    const imgContainer = document.getElementById('char-img-container');
+    const imgUpload = document.getElementById('char-img-upload');
+    const imgHidden = document.getElementById('character_appearance_img');
+    const imgPreview = document.getElementById('character_appearance_img_display');
+    const imgLabel = document.querySelector('#char-img-container .img-label');
+
+    if (!imgContainer) return;
+
+    imgContainer.addEventListener('click', () => {
+        if (!editMode) return;
+        imgUpload.click();
+    });
+
+    imgContainer.addEventListener('dragover', e => {
+        e.preventDefault();
+        if (editMode) imgContainer.style.borderColor = 'var(--gold)';
+    });
+
+    imgContainer.addEventListener('dragleave', e => {
+        e.preventDefault();
+        if (editMode) imgContainer.style.borderColor = '';
+    });
+
+    imgContainer.addEventListener('drop', e => {
+        e.preventDefault();
+        e.stopPropagation(); // Previne de tentar ler como se fosse a ficha json inteira
+        if (editMode) imgContainer.style.borderColor = '';
+        if (!editMode) return;
+        
+        const file = e.dataTransfer.files[0];
+        if (file) handleImageFile(file);
+    });
+
+    imgUpload.addEventListener('change', e => {
+        const file = e.target.files[0];
+        if (file) handleImageFile(file);
+    });
+
+    function handleImageFile(file) {
+        if (!file.type.startsWith('image/')) {
+            showToast('Por favor, selecione uma imagem válida.', 'error');
+            return;
+        }
+        
+        if (file.size > 100 * 1024) {  // 100KB
+            showToast('A imagem deve ter no máximo 100KB.', 'error');
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const base64 = e.target.result;
+            imgHidden.value = base64; // Set value for auto-save
+            imgPreview.src = base64;
+            imgPreview.style.display = 'block';
+            if (imgLabel) imgLabel.style.display = 'none';
+        };
+        reader.readAsDataURL(file);
+    }
+}

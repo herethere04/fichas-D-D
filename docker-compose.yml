@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+  app:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=db-dnd;Database=dnd_sheets;Username=postgres;Password=password
+      - PORT=5000
+    depends_on:
+      db-dnd:
+        condition: service_healthy
+
+  db-dnd:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=dnd_sheets
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d dnd_sheets"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5432:5432"
