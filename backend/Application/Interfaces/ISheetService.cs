@@ -10,4 +10,5 @@ public interface ISheetService
     Task<bool> UpdateSheetAsync(int id, string editPassword, string sheetData);
     Task<bool> DeleteSheetAsync(int id, string editPassword);
     Task<bool> VerifyPasswordAsync(int id, string editPassword);
+    Task<bool> ResetPasswordDirectAsync(int id, string newPassword);
 }

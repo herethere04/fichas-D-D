@@ -137,4 +137,22 @@ public class SheetsController : ControllerBase
 
         return Ok(new { message = "Senha verificada. Edição liberada." });
     }
+
+    /// <summary>
+    /// Direct reset of sheet password (authorized only).
+    /// </summary>
+    [HttpPost("{id}/reset-password-direct")]
+    [Authorize]
+    public async Task<IActionResult> ResetPasswordDirect(int id, [FromBody] ResetPasswordDirectRequest request)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var success = await _sheetService.ResetPasswordDirectAsync(id, request.NewPassword);
+        
+        if (!success)
+            return NotFound(new { message = "Ficha não encontrada." });
+
+        return Ok(new { message = "Senha de edição atualizada com sucesso." });
+    }
 }

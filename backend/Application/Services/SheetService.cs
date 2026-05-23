@@ -82,4 +82,21 @@ public class SheetService : ISheetService
 
         return BCrypt.Net.BCrypt.Verify(editPassword, sheet.EditPasswordHash);
     }
+
+    public async Task<bool> ResetPasswordDirectAsync(int id, string newPassword)
+    {
+        var sheet = await _sheetRepository.GetByIdAsync(id);
+        if (sheet == null)
+        {
+            return false;
+        }
+
+        sheet.EditPasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
+        sheet.UpdatedAt = DateTime.UtcNow;
+
+        _sheetRepository.Update(sheet);
+        await _sheetRepository.SaveChangesAsync();
+
+        return true;
+    }
 }

@@ -345,3 +345,91 @@ function setupImageUpload() {
         reader.readAsDataURL(file);
     }
 }
+
+// === RESET PASSWORD MEME FLOW ===
+
+function openResetPasswordModal() {
+    document.getElementById('reset-password-modal').style.display = 'flex';
+    document.getElementById('new-edit-pass').value = '';
+    document.getElementById('confirm-new-edit-pass').value = '';
+    document.getElementById('reset-pass-error').style.display = 'none';
+    document.getElementById('new-edit-pass').focus();
+}
+
+function closeResetPasswordModal() {
+    document.getElementById('reset-password-modal').style.display = 'none';
+}
+
+// Close reset password modal on overlay click
+document.getElementById('reset-password-modal')?.addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) closeResetPasswordModal();
+});
+
+// Cascading comedic confirmations
+async function startResetPasswordSequence() {
+    closePasswordModal();
+
+    // 1st window
+    const check1 = confirm("AVISO CRÍTICO:\nApenas o DONO desta ficha tem permissão para alterar a senha!\n\nVocê é REALMENTE o dono dessa ficha?");
+    if (!check1) {
+        showToast("Operação abortada! Apenas o dono deve mexer.", "error");
+        return;
+    }
+
+    // 2nd window
+    const check2 = confirm("Tem certeza absoluta disso?\n\nO mestre está de olho e sabe onde você mora...");
+    if (!check2) {
+        showToast("Refletiu bem, né? Cancelado.", "info");
+        return;
+    }
+
+    // 3rd window
+    const check3 = confirm("Tem certeza mesmo, mesmo, de verdade? Sem volta?");
+    if (!check3) {
+        showToast("Cancelado de última hora!", "info");
+        return;
+    }
+
+    // If passed all, open reset modal
+    openResetPasswordModal();
+}
+
+// Form submission for password reset
+document.getElementById('reset-password-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const newPass = document.getElementById('new-edit-pass').value;
+    const confirmPass = document.getElementById('confirm-new-edit-pass').value;
+    const errorDiv = document.getElementById('reset-pass-error');
+    const saveBtn = document.getElementById('btn-save-reset-pass');
+
+    errorDiv.style.display = 'none';
+
+    if (newPass.length < 3) {
+        errorDiv.textContent = "A senha deve ter no mínimo 3 caracteres.";
+        errorDiv.style.display = 'block';
+        return;
+    }
+
+    if (newPass !== confirmPass) {
+        errorDiv.textContent = "As senhas não coincidem!";
+        errorDiv.style.display = 'block';
+        return;
+    }
+
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Salvando...';
+
+    try {
+        await api.resetPasswordDirect(currentSheetId, newPass);
+        closeResetPasswordModal();
+        showToast("Senha redefinida com sucesso! Agora você já pode editar.", "success");
+        // Open the original password modal again so they can unlock it with their new password
+        openPasswordModal();
+    } catch (err) {
+        errorDiv.textContent = err.message;
+        errorDiv.style.display = 'block';
+    } finally {
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Salvar';
+    }
+});

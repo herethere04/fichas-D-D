@@ -87,6 +87,11 @@ const api = {
         return this.request('POST', `/sheets/${id}/verify-password`, { editPassword });
     },
 
+    async resetPasswordDirect(id, newPassword) {
+        return this.request('POST', `/sheets/${id}/reset-password-direct`, { newPassword });
+    },
+
+
     requireAuth() {
         if (!this.isLoggedIn()) {
             window.location.href = 'login.html';

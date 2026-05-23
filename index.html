@@ -38,6 +38,35 @@
                     <button type="button" class="btn-cancel" onclick="closePasswordModal()">Cancelar</button>
                     <button type="submit" class="btn-create"><i class="fa-solid fa-unlock"></i> Desbloquear</button>
                 </div>
+                <div style="margin-top: 15px; text-align: center;">
+                    <a href="#" id="link-reset-password" class="hint" style="color: var(--gold); text-decoration: underline; cursor: pointer; font-size: 0.75rem; display: block;" onclick="event.preventDefault(); startResetPasswordSequence();">Esqueceu a senha? Redefinir</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Reset Password Modal -->
+    <div id="reset-password-modal" class="modal-overlay" style="display:none;">
+        <div class="modal-card">
+            <h2><i class="fa-solid fa-key"></i> Redefinir Senha</h2>
+            <p style="text-align: center; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 15px; line-height: 1.4;">
+                <i class="fa-solid fa-triangle-exclamation" style="color: var(--gold); margin-right: 5px;"></i> 
+                Aviso: Apenas o dono da ficha deve alterar esta senha!
+            </p>
+            <form id="reset-password-form">
+                <div class="form-group">
+                    <label for="new-edit-pass"><i class="fa-solid fa-lock"></i> Nova Senha de Edição</label>
+                    <input type="password" id="new-edit-pass" placeholder="Mínimo 3 caracteres" required minlength="3" maxlength="50" autocomplete="new-password">
+                </div>
+                <div class="form-group">
+                    <label for="confirm-new-edit-pass"><i class="fa-solid fa-circle-check"></i> Confirmar Nova Senha</label>
+                    <input type="password" id="confirm-new-edit-pass" placeholder="Repita a senha" required minlength="3" maxlength="50" autocomplete="new-password">
+                </div>
+                <div id="reset-pass-error" class="error-msg" style="display:none;"></div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeResetPasswordModal()">Cancelar</button>
+                    <button type="submit" id="btn-save-reset-pass" class="btn-create"><i class="fa-solid fa-floppy-disk"></i> Salvar</button>
+                </div>
             </form>
         </div>
     </div>
