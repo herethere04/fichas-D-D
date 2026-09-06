@@ -93,6 +93,8 @@ Isso iniciará o app na porta **5000** e um banco PostgreSQL local automaticamen
 
 ## Deploy de Produção 🚀
 
+Para as otimizações de backend, limites dos planos gratuitos e testes, consulte [Desempenho no Render e Neon](docs/desempenho.md).
+
 A aplicação foi preparada para deploy utilizando o **Dockerfile**.
 O backend em C# serve tanto a API quanto os arquivos estáticos na porta definida pela nuvem (variável `PORT`).
 

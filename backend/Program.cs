@@ -1,4 +1,6 @@
 using System.Text;
+using System.IO.Compression;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -47,6 +49,16 @@ builder.Services.AddSingleton<RateLimitService>();
 // === CONTROLLERS ===
 builder.Services.AddControllers();
 
+// Fast compression reduces JSON/Base64 transfer without changing the frontend or API contract.
+builder.Services.AddResponseCompression(options =>
+{
+    options.EnableForHttps = true;
+    options.Providers.Add<BrotliCompressionProvider>();
+    options.Providers.Add<GzipCompressionProvider>();
+});
+builder.Services.Configure<BrotliCompressionProviderOptions>(options => options.Level = CompressionLevel.Fastest);
+builder.Services.Configure<GzipCompressionProviderOptions>(options => options.Level = CompressionLevel.Fastest);
+
 // === CORS (for local dev) ===
 builder.Services.AddCors(options =>
 {
@@ -60,17 +72,21 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.Migrate();
+    // Render Free restarts after inactivity. Avoid migration locks/DDL when up to date.
+    if ((await db.Database.GetPendingMigrationsAsync()).Any())
+    {
+        await db.Database.MigrateAsync();
+    }
 
     // Seed admin user if not exists
-    if (!db.Users.Any(u => u.Username == "admin"))
+    if (!await db.Users.AnyAsync(u => u.Username == "admin"))
     {
         db.Users.Add(new DnDSheetApi.Domain.Entities.User
         {
             Username = "admin",
             PasswordHash = BCrypt.Net.BCrypt.HashPassword("mestrejohn")
         });
-        db.SaveChanges();
+        await db.SaveChangesAsync();
     }
 }
 
@@ -80,6 +96,14 @@ app.Urls.Add($"http://*:{port}");
 
 // === MIDDLEWARE PIPELINE ===
 app.UseCors();
+
+// Limit compression to sheet reads and static assets. Login/password responses are excluded.
+app.UseWhen(context => HttpMethods.IsGet(context.Request.Method) &&
+    (context.Request.Path.StartsWithSegments("/api/sheets") ||
+     context.Request.Path == "/" ||
+     context.Request.Path.Value is "/login.html" or "/fichas.html" or "/index.html" or
+         "/style.css" or "/script.js" or "/api.js"),
+    branch => branch.UseResponseCompression());
 
 // Global rate limit middleware (100 requests/min/IP)
 var globalRateLimiter = app.Services.GetRequiredService<RateLimitService>();
@@ -144,3 +168,6 @@ app.MapGet("/", async context =>
 var cleanupTimer = new Timer(_ => globalRateLimiter.Cleanup(), null, TimeSpan.FromMinutes(5), TimeSpan.FromMinutes(5));
 
 app.Run();
+
+// Allows integration tests to host the real pipeline with an isolated PostgreSQL database.
+public partial class Program { }
