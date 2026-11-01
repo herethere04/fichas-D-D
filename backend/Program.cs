@@ -35,6 +35,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 builder.Services.AddAuthorization();
+builder.Services.AddHttpContextAccessor();
 
 // === DEPENDENCY INJECTION ===
 builder.Services.AddScoped<IUserRepository, UserRepository>();

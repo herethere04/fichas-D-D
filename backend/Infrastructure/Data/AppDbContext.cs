@@ -25,5 +25,9 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<User>()
             .HasIndex(u => u.Username)
             .IsUnique();
+
+        modelBuilder.Entity<CharacterSheet>()
+            .HasOne<User>().WithMany().HasForeignKey(s => s.OwnerId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }
