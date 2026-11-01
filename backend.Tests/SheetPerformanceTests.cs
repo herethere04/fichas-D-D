@@ -1,4 +1,6 @@
 using System.Data.Common;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
 using System.IO.Compression;
 using System.Net;
 using System.Net.Http.Headers;
@@ -24,12 +26,33 @@ public class SheetPerformanceTests : IClassFixture<TestApp>
     public SheetPerformanceTests(TestApp app) => _app = app;
 
     [Fact]
+    public async Task Profiles_only_list_and_manage_their_own_sheets()
+    {
+        using var client = _app.CreateClient();
+        await using var db = _app.CreateDb();
+        var existing = await SeedAsync(db);
+        var username = "test-" + Guid.NewGuid().ToString("N");
+        db.Users.Add(new User { Username = username, PasswordHash = BCrypt.Net.BCrypt.HashPassword("test-pass") });
+        await db.SaveChangesAsync();
+        var login = await client.PostAsJsonAsync("/api/auth/login", new { username, password = "test-pass" });
+        login.EnsureSuccessStatusCode();
+        var token = (await login.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("token").GetString();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        var list = await client.GetFromJsonAsync<JsonElement>("/api/sheets");
+        Assert.Empty(list.EnumerateArray());
+        var reset = await client.PostAsJsonAsync($"/api/sheets/{existing.Id}/reset-password-direct", new { newPassword = "new-password" });
+        Assert.Equal(HttpStatusCode.NotFound, reset.StatusCode);
+        var update = await client.PutAsJsonAsync($"/api/sheets/{existing.Id}", new { editPassword = "test-password", sheetData = "{}" });
+        Assert.Equal(HttpStatusCode.Forbidden, update.StatusCode);
+    }
+
+    [Fact]
     public async Task Reads_fetch_only_needed_columns_and_do_not_track_sheets()
     {
         using var client = _app.CreateClient(); // Apply migrations to the isolated database.
         var commands = new CommandCapture();
         await using var db = _app.CreateDb(commands);
-        var repository = new SheetRepository(db);
+        var repository = new SheetRepository(db, OwnerContext(await db.Users.Where(u => u.Username == "admin").Select(u => u.Id).SingleAsync()));
         var sheet = await SeedAsync(db);
         db.ChangeTracker.Clear();
 
@@ -56,7 +79,7 @@ public class SheetPerformanceTests : IClassFixture<TestApp>
         await using var db = _app.CreateDb(commands);
         var sheet = await SeedAsync(db);
         db.ChangeTracker.Clear();
-        var repository = new SheetRepository(db);
+        var repository = new SheetRepository(db, OwnerContext(await db.Users.Where(u => u.Username == "admin").Select(u => u.Id).SingleAsync()));
         var previouslyVerifiedHash = await repository.GetEditPasswordHashAsync(sheet.Id);
         var newHash = BCrypt.Net.BCrypt.HashPassword("new-password");
 
@@ -165,6 +188,8 @@ public class SheetPerformanceTests : IClassFixture<TestApp>
         Assert.Equal(sheet.SheetData, response.GetProperty("sheetData").GetString());
     }
 
+    private static IHttpContextAccessor OwnerContext(int id) => new HttpContextAccessor { HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, id.ToString()) }, "test")) } };
+
     private static void AssertProperties(JsonElement element, params string[] names) =>
         Assert.Equal(names.Order(), element.EnumerateObject().Select(p => p.Name).Order());
 
@@ -174,6 +199,7 @@ public class SheetPerformanceTests : IClassFixture<TestApp>
         new Random(42).NextBytes(bytes);
         var sheet = new CharacterSheet
         {
+            OwnerId = await db.Users.Where(u => u.Username == "admin").Select(u => u.Id).SingleAsync(),
             CharacterName = "Large test sheet",
             EditPasswordHash = BCrypt.Net.BCrypt.HashPassword("test-password"),
             SheetData = JsonSerializer.Serialize(new { image = "data:image/png;base64," + Convert.ToBase64String(bytes) }),

@@ -8,6 +8,8 @@ public class CharacterSheet
     [Key]
     public int Id { get; set; }
 
+    public int OwnerId { get; set; }
+
     [Required, MaxLength(100)]
     public string CharacterName { get; set; } = string.Empty;
 
